@@ -139,8 +139,6 @@ ai-coding-starter-kit/
 │   └── agents/              ← 6 AI Agents (Requirements, Architect, Frontend, Backend, QA, DevOps)
 ├── features/                ← Feature Specs (Requirements Engineer creates these)
 │   └── README.md            ← Documentation on how to write feature specs
-├── test-reports/            ← QA Test Reports (QA Engineer creates these)
-│   └── README.md            ← Documentation on test report format
 ├── src/
 │   ├── app/                 ← Pages (Next.js App Router)
 │   ├── components/          ← React Components
@@ -150,7 +148,6 @@ ai-coding-starter-kit/
 │       └── utils.ts         ← Helper functions
 ├── public/                  ← Static files
 ├── PROJECT_CONTEXT.md       ← This file - update as project grows
-├── FEATURE_CHANGELOG.md     ← Tracks all implemented features
 └── package.json
 ```
 
@@ -193,9 +190,10 @@ ai-coding-starter-kit/
    - Requirements → Architecture → Development → QA → Deployment
    - Each agent knows when to hand off to the next agent
 
-4. **Update documentation as you go**
-   - `PROJECT_CONTEXT.md` - Add features to roadmap, mark them as done
-   - `FEATURE_CHANGELOG.md` - Automatically updated after deployment
+4. **Track progress via Git**
+   - Feature specs in `/features/PROJ-X.md` show status (Planned → In Progress → Deployed)
+   - Git commits track all implementation details
+   - Use `git log --grep="PROJ-X"` to see feature history
 
 ---
 

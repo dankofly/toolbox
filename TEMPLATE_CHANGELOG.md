@@ -6,6 +6,157 @@
 
 ---
 
+## v1.3.0 - Production-Ready Essentials (2026-01-12)
+
+### ✅ Changes
+
+#### 1. Production Guides Added to DevOps Agent
+
+**New Sections in `.claude/agents/devops.md`:**
+
+1. **Error Tracking Setup (Sentry)**
+   - 5-minute setup guide with code examples
+   - Environment variables configuration
+   - Alternative: Vercel Error Tracking
+
+2. **Security Headers (Next.js Config)**
+   - Copy-paste `next.config.js` with security headers
+   - XSS, Clickjacking, MIME-Sniffing protection
+   - HSTS (Strict-Transport-Security)
+
+3. **Environment Variables Best Practices**
+   - ✅ DO / ❌ DON'T guidelines
+   - `NEXT_PUBLIC_` prefix explanation
+   - Production vs Preview vs Development environments
+
+4. **Performance Monitoring (Lighthouse)**
+   - Quick check with Chrome DevTools
+   - Common performance killers + fixes
+   - Image optimization with `next/image`
+
+5. **Production-Ready Checklist**
+   - One-time checks for first deployment
+   - Error Tracking, Security Headers, Performance, SEO, Favicon
+
+**Benefits:**
+- ✅ Production-ready in 15 minutes (not days!)
+- ✅ All guides practical with copy-paste code
+- ✅ No theory – only actionable steps
+
+---
+
+#### 2. Performance & Scalability Guides in Backend Agent
+
+**New Sections in `.claude/agents/backend-dev.md`:**
+
+1. **Database Indexing**
+   - When to create indexes (WHERE, ORDER BY, JOIN)
+   - Example: 500ms → <10ms query optimization
+   - Supabase-specific instructions
+
+2. **Query Performance Optimization**
+   - N+1 Query Problem (Bad vs Good examples)
+   - Supabase joins for efficient queries
+   - Always use `.limit()` for lists
+
+3. **Caching Strategy**
+   - When to cache (settings, profiles, expensive queries)
+   - Next.js `unstable_cache` examples
+   - Optional: Redis for advanced caching
+
+4. **Input Validation & Sanitization**
+   - Zod schemas for type-safe validation
+   - Example: Bad vs Good validation
+   - Security: Never trust user input!
+
+5. **Rate Limiting**
+   - Prevent abuse and DDoS attacks
+   - Upstash Redis example (optional)
+   - Alternative: Vercel Edge Config
+
+**Quick Reference Checklist:**
+- Indexing (PFLICHT!)
+- Query optimization, Input validation, Caching, Rate Limiting (optional but recommended)
+
+---
+
+#### 3. Test Reports Directory Added
+
+**New Directory:** `/test-reports/`
+
+- QA Engineer now saves test reports here
+- Naming: `PROJ-X-feature-name.md`
+- Complete `test-reports/README.md` with:
+  - Report structure guidelines
+  - Production-Ready criteria
+  - Regression testing workflow
+  - Tools (Browser DevTools, Lighthouse, axe DevTools)
+
+**Updated QA Agent:**
+- Checklist item: "Test-Report gespeichert in `/test-reports/PROJ-X-feature-name.md`"
+- Workflow includes saving reports
+
+---
+
+#### 4. Template Branding & Clarity
+
+**README.md:**
+- Template renamed: "AI Coding Starter Kit" (from "Next.js Agent Starter")
+- Professional headline: "Build scalable, production-ready web apps faster"
+- Clear benefits section for PMs, Solo Founders, Small Teams
+- Production-Ready Features section highlighting DevOps + Backend guides
+- Agent-Team Workflow section with step-by-step examples
+- Tech Stack table (Framework, Language, Styling, etc.)
+
+**Clarity Improvements:**
+- Agents renamed in descriptions (e.g., "solution-architect.md" instead of file path only)
+- "PM-Friendly" emphasized (no code in specs, automatic handoffs)
+- Scripts section added (`npm run dev`, `build`, `start`, `lint`)
+
+---
+
+### 📦 New Files
+
+1. **`test-reports/README.md`** – QA Test Reports guidelines
+
+---
+
+### 🔄 Updated Files
+
+1. **`.claude/agents/devops.md`**
+   - Added 5 production-ready sections (Error Tracking, Security, Env Vars, Performance, Checklist)
+   - Expanded from ~200 lines → ~400 lines
+
+2. **`.claude/agents/backend-dev.md`**
+   - Added 5 performance/scalability sections (Indexing, Query Optimization, Caching, Validation, Rate Limiting)
+   - Expanded from ~180 lines → ~350 lines
+
+3. **`.claude/agents/qa-engineer.md`**
+   - Updated workflow: Test reports saved to `/test-reports/`
+   - Added checklist item: "Test-Report gespeichert"
+
+4. **`README.md`**
+   - Complete rewrite: More professional, clearer structure
+   - Added Production-Ready Features section
+   - Added Agent-Team Workflow section
+   - Added Why This Template section (PMs, Solo Founders, Teams)
+
+5. **`TEMPLATE_CHANGELOG.md`**
+   - Added this v1.3.0 entry
+
+---
+
+### 🚀 Migration Guide
+
+No migration needed – all changes are additive.
+
+If you cloned v1.2.0:
+1. Update your agents: Copy `.claude/agents/devops.md` and `.claude/agents/backend-dev.md`
+2. Create `/test-reports/` directory
+3. Copy `test-reports/README.md`
+
+---
+
 ## v1.2.0 - Feature Changelog System (2026-01-10)
 
 ### ✅ Änderungen

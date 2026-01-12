@@ -71,9 +71,7 @@ Hey Claude, read .claude/agents/requirements-engineer.md and create a feature sp
 ai-coding-starter-kit/
 ├── .claude/
 │   └── agents/              ← 6 AI Agents (Production-Ready)
-├── features/                ← Feature Specs (Requirements Engineer creates these)
-│   └── README.md
-├── test-reports/            ← QA Test Reports (QA Engineer creates these)
+├── features/                ← Feature Specs (includes specs, test results, deployment status)
 │   └── README.md
 ├── src/
 │   ├── app/                 ← Pages (Next.js App Router)
@@ -87,7 +85,6 @@ ai-coding-starter-kit/
 │       └── utils.ts
 ├── public/                  ← Static files
 ├── PROJECT_CONTEXT.md       ← Project Documentation (fill this out!)
-├── FEATURE_CHANGELOG.md     ← Feature Tracking (updated after deployment)
 ├── TEMPLATE_CHANGELOG.md    ← Template Version History (v1.0 - v1.3)
 ├── HOW_TO_USE_AGENTS.md     ← Agent Usage Guide
 ├── .env.local.example       ← Environment Variables Template
@@ -152,7 +149,7 @@ Agent designs PM-friendly Tech Design (no code!) → You review
 "Read .claude/agents/qa-engineer.md and test /features/PROJ-1-feature.md"
 ```
 
-Agent tests all Acceptance Criteria → Creates Test Report in `/test-reports/`
+Agent tests all Acceptance Criteria → Adds test results to feature spec
 
 ### 5. Deployment Phase
 ```bash
@@ -245,7 +242,7 @@ Agent guides you through deployment + Production-Ready setup (Error Tracking, Se
 
 ### For Small Teams (2-5 people)
 - **Consistent workflow** – Everyone follows the same agent system
-- **Code reuse** – FEATURE_CHANGELOG prevents duplicate code
+- **Code reuse** – Git history shows what exists, prevents duplication
 - **Knowledge sharing** – All decisions documented in Feature Specs
 
 ---
@@ -255,8 +252,8 @@ Agent guides you through deployment + Production-Ready setup (Error Tracking, Se
 ### Template Docs
 - [HOW_TO_USE_AGENTS.md](HOW_TO_USE_AGENTS.md) – Agent usage guide
 - [PROJECT_CONTEXT.md](PROJECT_CONTEXT.md) – Project documentation template
-- [FEATURE_CHANGELOG.md](FEATURE_CHANGELOG.md) – Feature tracking system
 - [TEMPLATE_CHANGELOG.md](TEMPLATE_CHANGELOG.md) – Template version history
+- [features/README.md](features/README.md) – Feature spec format
 
 ### External Docs
 - [Next.js Docs](https://nextjs.org/docs)
@@ -279,14 +276,15 @@ npm run lint       # Run ESLint
 
 ## Template Versions
 
-**Current:** v1.3.0 (Production-Ready Essentials)
+**Current:** v1.4.0 (Git-Based Workflow)
 
 See [TEMPLATE_CHANGELOG.md](TEMPLATE_CHANGELOG.md) for full version history.
 
 **Updates:**
+- v1.4.0 – Git-Based Workflow (removed FEATURE_CHANGELOG, test-reports)
 - v1.3.0 – Production-Ready Guides (Error Tracking, Security, Performance)
-- v1.2.0 – FEATURE_CHANGELOG System (Code Reuse)
-- v1.1.0 – Agent System Improvements (Interactive Questions, PM-Friendly Output)
+- v1.2.0 – Agent System Improvements (Interactive Questions, PM-Friendly Output)
+- v1.1.0 – Enhanced Documentation
 - v1.0.0 – Initial Release
 
 ---
