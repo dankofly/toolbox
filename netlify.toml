@@ -1,0 +1,38 @@
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Next.js on Netlify uses @netlify/plugin-nextjs automatically
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Security headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Allow iframes for tool pages
+[[headers]]
+  for = "/tools/*"
+  [headers.values]
+    X-Frame-Options = "SAMEORIGIN"
+
+# Static HTML tools - cache for 1 hour
+[[headers]]
+  for = "/tools/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=3600"
+
+# Redirects for SPA
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+  conditions = {Language = ["en"]}
