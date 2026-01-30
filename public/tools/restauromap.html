@@ -16,7 +16,7 @@
             --text-primary: #000000;
             --text-secondary: #3c3c43;
             --text-tertiary: #8e8e93;
-            --blue-primary: #007aff;
+            --blue-primary: #8f1d1d;
             --blue-secondary: #5ac8fa;
             --blue-tertiary: #cae4ff;
             --gray-1: #8e8e93;
@@ -156,7 +156,7 @@
         }
         .card.interactive {
             cursor: pointer;
-            -webkit-tap-highlight-color: rgba(0, 122, 255, 0.1);
+            -webkit-tap-highlight-color: rgba(143, 29, 29, 0.1);
         }
         .card.interactive:hover {
             transform: translateY(-1px);
@@ -297,7 +297,7 @@
             background: transparent; color: var(--blue-primary); border: none; border-radius: 50%; padding: 6px; font-size: 12px; cursor: pointer;
             display: flex; align-items: center; justify-content: center; transition: all var(--transition-fast);
         }
-        .edit-entry-button:hover { background-color: rgba(0, 122, 255, 0.1); }
+        .edit-entry-button:hover { background-color: rgba(143, 29, 29, 0.1); }
         /* Toast Messages */
         #toast-container { position: fixed; bottom: calc(100px + var(--safe-area-bottom)); left: 50%; transform: translateX(-50%); z-index: 2000; display: flex; flex-direction: column; gap: 8px; pointer-events: none; width: 90%; max-width: 400px; }
         .toast {
@@ -527,7 +527,7 @@
       #sa-canvas {max-width:100%; max-height:100%; width:auto; height:auto; display:block; background:#fff; touch-action:none;}
       #sa-actions {display:flex; gap:8px; margin-top:8px; justify-content:flex-end;}
       .sa-btn {padding:8px 12px; border-radius:8px; border:1px solid var(--gray-4,#ddd); background:var(--bg-tertiary,#f7f7f7); cursor:pointer}
-      .sa-btn.primary {background:var(--blue-primary,#007aff); color:#fff; border-color:transparent;}
+      .sa-btn.primary {background:var(--blue-primary,#8f1d1d); color:#fff; border-color:transparent;}
       #sa-palette .sa-color-swatch {
         width: 28px; height: 28px; border-radius: 50%; border: none; cursor: pointer;
         box-shadow: 0 1px 2px rgba(0,0,0,.2); padding: 0;
@@ -536,7 +536,7 @@
       #sa-palette .sa-color-swatch[data-color="#ff9500"]{ background:#ff9500; }
       #sa-palette .sa-color-swatch[data-color="#ffcc00"]{ background:#ffcc00; }
       #sa-palette .sa-color-swatch[data-color="#34c759"]{ background:#34c759; }
-      #sa-palette .sa-color-swatch[data-color="#007aff"]{ background:#007aff; }
+      #sa-palette .sa-color-swatch[data-color="#8f1d1d"]{ background:#8f1d1d; }
       #sa-palette .sa-color-swatch[data-color="#5856d6"]{ background:#5856d6; }
       #sa-palette .sa-color-swatch[data-color="#ff2d55"]{ background:#ff2d55; }
       #sa-palette .sa-color-swatch[data-color="#000000"]{ background:#000000; }
@@ -559,7 +559,7 @@
             <button type="button" class="sa-color-swatch" data-color="#ff9500" title="Orange"></button>
             <button type="button" class="sa-color-swatch" data-color="#ffcc00" title="Gelb"></button>
             <button type="button" class="sa-color-swatch" data-color="#34c759" title="Grün"></button>
-            <button type="button" class="sa-color-swatch" data-color="#007aff" title="Blau"></button>
+            <button type="button" class="sa-color-swatch" data-color="#8f1d1d" title="Rot"></button>
             <button type="button" class="sa-color-swatch" data-color="#5856d6" title="Indigo"></button>
             <button type="button" class="sa-color-swatch" data-color="#ff2d55" title="Pink"></button>
             <button type="button" class="sa-color-swatch" data-color="#000000" title="Schwarz"></button>
@@ -1178,7 +1178,7 @@ ui.showPage = pageId => {
                     areas.forEach((area, index) => {
                         if (!area.coords || area.coords.length === 0) return;
                         const c = editor.getPolygonCentroid(area.coords), size = Math.max(20, Math.min(img.width,img.height)*0.025);
-                        ctx.beginPath(); ctx.arc(c.x, c.y, size, 0, 2*Math.PI); ctx.fillStyle = '#007aff'; ctx.fill();
+                        ctx.beginPath(); ctx.arc(c.x, c.y, size, 0, 2*Math.PI); ctx.fillStyle = '#8f1d1d'; ctx.fill();
                         ctx.strokeStyle = 'white'; ctx.lineWidth = size/8; ctx.stroke();
                         ctx.fillStyle='white'; ctx.font=`bold ${size*0.8}px ${getComputedStyle(document.body).fontFamily}`;
                         ctx.textAlign='center'; ctx.textBaseline='middle'; ctx.fillText(index+1, c.x, c.y);
@@ -1298,7 +1298,7 @@ ui.showPage = pageId => {
                     editor.ctx.shadowColor = 'transparent'; editor.ctx.shadowBlur = 0;
                 }
                 if (isDrawing && area.coords.length > 0) {
-                    const p = area.coords[0]; editor.ctx.fillStyle = '#007aff';
+                    const p = area.coords[0]; editor.ctx.fillStyle = '#8f1d1d';
                     editor.ctx.beginPath(); editor.ctx.arc(p.x, p.y, 10/scale, 0, 2*Math.PI); editor.ctx.fill();
                     editor.ctx.strokeStyle = 'white'; editor.ctx.lineWidth = 2/scale; editor.ctx.stroke();
                 }
@@ -1535,7 +1535,7 @@ return distToPerimeter <= Math.max(m, thickness) || (inside && distToPerimeter <
                   g.stroke();
                 }
                 if (selected) {
-                  g.setLineDash([6,4]); g.lineWidth = 2; g.strokeStyle = '#007aff';
+                  g.setLineDash([6,4]); g.lineWidth = 2; g.strokeStyle = '#8f1d1d';
                   const x1 = Math.min(s.x1 ?? s.points?.[0]?.x ?? 0, s.x2 ?? s.points?.[0]?.x ?? 0);
                   const y1 = Math.min(s.y1 ?? s.points?.[0]?.y ?? 0, s.y2 ?? s.points?.[0]?.y ?? 0);
                   const x2 = Math.max(s.x1 ?? s.points?.[s.points.length-1]?.x ?? 0, s.x2 ?? s.points?.[s.points.length-1]?.x ?? 0);

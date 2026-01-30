@@ -10,17 +10,17 @@
         :root {
             --bg-color: #f0f2f5; --card-bg-color: #ffffff; --text-primary: #1c1c1e;
             --text-secondary: #6e6e73; --border-color: #dcdce0; --input-bg-color: #f0f2f5;
-            --primary-action-color: #007aff; --primary-action-hover: #005bb5;
+            --primary-action-color: #8f1d1d; --primary-action-hover: #701717;
             --secondary-action-color: #e5e5ea; --secondary-action-hover: #d1d1d6;
             --secondary-text-color: #1c1c1e; --shadow-color: rgba(0, 0, 0, 0.05);
             --toast-bg-color: #ff3b30; --toast-text-color: #ffffff;
             --canvas-bg: #ffffff; --btn-disabled-bg: #e5e5ea; --btn-disabled-text: #aeaeb2;
-            --helper-color: #AF52DE; --highlight-color: rgba(0, 122, 255, 0.15);
+            --helper-color: #AF52DE; --highlight-color: rgba(143, 29, 29, 0.15);
             --info-icon-color: #aeaeb2;
             --centerline-color: #FF9500;
             --warning-color: #FF9500;
             /* Zeichnungsfarben */
-            --color-outer-arc: #0A84FF;
+            --color-outer-arc: #a52525;
             --color-inner-arc: #FF453A;
             --color-mantle: #30D158;
             --color-segment: #8A8A8E;
@@ -33,12 +33,12 @@
             --secondary-action-color: #3a3a3c; --secondary-action-hover: #4a4a4c;
             --secondary-text-color: #ffffff; --shadow-color: rgba(0, 0, 0, 0.25);
             --btn-disabled-bg: #2c2c2e; --btn-disabled-text: #505054;
-            --highlight-color: rgba(0, 122, 255, 0.25);
+            --highlight-color: rgba(143, 29, 29, 0.25);
             --info-icon-color: #6e6e73;
             --centerline-color: #FF9F0A;
             --warning-color: #FF9F0A;
             /* Dark-Theme Zeichnungsfarben */
-            --color-outer-arc: #0A84FF;
+            --color-outer-arc: #a52525;
             --color-inner-arc: #FF453A;
             --color-mantle: #30D158;
             --color-segment: #8e8e93;
@@ -66,7 +66,7 @@
         .label-icon svg { width: 15px; height: 15px; }
         .input-wrapper { position: relative; flex-grow: 1; }
         .input-group input { width: 100%; padding: 12px; font-size: 1rem; border: 1px solid var(--border-color); border-radius: 8px; background-color: var(--input-bg-color); color: var(--text-primary); transition: border-color 0.3s, background-color 0.3s, box-shadow 0.2s; text-align: center; }
-        .input-group input:focus { outline: none; border-color: var(--primary-action-color); box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.3); }
+        .input-group input:focus { outline: none; border-color: var(--primary-action-color); box-shadow: 0 0 0 3px rgba(143, 29, 29, 0.3); }
         .unit { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--text-secondary); }
         .input-wrapper-extended { display: flex; align-items: center; gap: 8px; }
         .btn-stepper { flex-shrink: 0; width: 44px; height: 44px; font-size: 1.5rem; font-weight: 400; line-height: 44px; text-align: center; color: var(--primary-action-color); background-color: var(--secondary-action-color); border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: background-color 0.2s, transform 0.1s; user-select: none; }
@@ -84,7 +84,7 @@
         .btn:active { transform: scale(0.98); }
         .btn:disabled { background-color: var(--btn-disabled-bg) !important; color: var(--btn-disabled-text) !important; border-color: transparent !important; cursor: not-allowed; transform: none; }
         .btn-primary { background-color: var(--primary-action-color); color: white; border-color: var(--primary-action-color); }
-        .btn-primary:hover:not(:disabled) { background-color: var(--primary-action-hover); border-color: var(--primary-action-hover); box-shadow: 0 4px 8px rgba(0, 122, 255, 0.2); }
+        .btn-primary:hover:not(:disabled) { background-color: var(--primary-action-hover); border-color: var(--primary-action-hover); box-shadow: 0 4px 8px rgba(143, 29, 29, 0.2); }
         .btn-secondary { background-color: var(--secondary-action-color); color: var(--secondary-text-color); border-color: transparent; }
         .btn-secondary:hover:not(:disabled) { background-color: var(--secondary-action-hover); }
 
