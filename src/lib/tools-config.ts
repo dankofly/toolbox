@@ -8,6 +8,8 @@ export interface Tool {
   accessLevel: AccessLevel;
   htmlFile: string;
   icon: string;
+  /** If true, use native React component instead of iframe */
+  useNativeComponent?: boolean;
 }
 
 export const TOOLS: Tool[] = [
@@ -19,6 +21,7 @@ export const TOOLS: Tool[] = [
     accessLevel: 'free',
     htmlFile: 'sparrenlaengen-rechner.html',
     icon: 'Ruler',
+    useNativeComponent: true,
   },
   {
     slug: 'holz-tools',
