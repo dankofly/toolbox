@@ -9,24 +9,24 @@ export default function Home() {
 
   return (
     <div className="flex flex-col">
-      {/* Hero Section - Turmdecker Style */}
+      {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center">
         {/* Background with gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-secondary/20" />
+        <div className="absolute inset-0 bg-gradient-to-br from-background via-background to-muted" />
         <div className="absolute inset-0 hero-gradient" />
 
         {/* Subtle grid pattern */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.02]"
           style={{
-            backgroundImage: `linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px),
-                              linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)`,
+            backgroundImage: `linear-gradient(hsl(var(--foreground) / 0.1) 1px, transparent 1px),
+                              linear-gradient(90deg, hsl(var(--foreground) / 0.1) 1px, transparent 1px)`,
             backgroundSize: '50px 50px'
           }}
         />
 
         <div className="relative container max-w-5xl mx-auto px-6 text-center pt-20">
-          <p className="text-sm tracking-[0.3em] uppercase text-muted-foreground mb-6">
+          <p className="text-sm tracking-[0.3em] uppercase text-primary mb-6">
             Kofler e.U. Spezialwerkzeuge
           </p>
           <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-8 leading-[0.9]">
@@ -41,14 +41,14 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/tools"
-              className="group inline-flex items-center justify-center px-8 py-4 text-sm font-medium tracking-wide uppercase bg-white text-black hover:bg-white/90 transition-all"
+              className="group inline-flex items-center justify-center px-8 py-4 text-sm font-medium tracking-wide uppercase bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
             >
               Alle Tools entdecken
               <ArrowRight className="ml-3 h-4 w-4 group-hover:translate-x-1 transition-transform" />
             </Link>
             <Link
               href="/tools/sparrenlaengen-rechner"
-              className="inline-flex items-center justify-center px-8 py-4 text-sm font-medium tracking-wide uppercase border border-white/20 hover:bg-white/5 transition-all"
+              className="inline-flex items-center justify-center px-8 py-4 text-sm font-medium tracking-wide uppercase border border-border hover:bg-muted transition-all"
             >
               Kostenlos starten
             </Link>
@@ -58,16 +58,16 @@ export default function Home() {
         {/* Scroll indicator */}
         <div className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground">
           <span className="text-xs tracking-widest uppercase">Scrollen</span>
-          <div className="w-px h-12 bg-gradient-to-b from-muted-foreground to-transparent" />
+          <div className="w-px h-12 bg-gradient-to-b from-primary/50 to-transparent" />
         </div>
       </section>
 
       {/* Features Section */}
-      <section className="py-32 px-6 border-t border-white/10">
+      <section className="py-32 px-6 border-t border-border">
         <div className="container max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12">
             <div className="text-center group">
-              <div className="mx-auto w-16 h-16 flex items-center justify-center mb-6 border border-white/10 group-hover:border-white/30 transition-colors">
+              <div className="mx-auto w-16 h-16 flex items-center justify-center mb-6 border border-border group-hover:border-primary group-hover:text-primary transition-colors">
                 <Calculator className="h-7 w-7" />
               </div>
               <h3 className="text-sm font-medium tracking-wide uppercase mb-3">Präzise Berechnungen</h3>
@@ -76,7 +76,7 @@ export default function Home() {
               </p>
             </div>
             <div className="text-center group">
-              <div className="mx-auto w-16 h-16 flex items-center justify-center mb-6 border border-white/10 group-hover:border-white/30 transition-colors">
+              <div className="mx-auto w-16 h-16 flex items-center justify-center mb-6 border border-border group-hover:border-primary group-hover:text-primary transition-colors">
                 <Ruler className="h-7 w-7" />
               </div>
               <h3 className="text-sm font-medium tracking-wide uppercase mb-3">7 Spezialtools</h3>
@@ -85,7 +85,7 @@ export default function Home() {
               </p>
             </div>
             <div className="text-center group">
-              <div className="mx-auto w-16 h-16 flex items-center justify-center mb-6 border border-white/10 group-hover:border-white/30 transition-colors">
+              <div className="mx-auto w-16 h-16 flex items-center justify-center mb-6 border border-border group-hover:border-primary group-hover:text-primary transition-colors">
                 <FileSpreadsheet className="h-7 w-7" />
               </div>
               <h3 className="text-sm font-medium tracking-wide uppercase mb-3">Export-Funktionen</h3>
@@ -94,7 +94,7 @@ export default function Home() {
               </p>
             </div>
             <div className="text-center group">
-              <div className="mx-auto w-16 h-16 flex items-center justify-center mb-6 border border-white/10 group-hover:border-white/30 transition-colors">
+              <div className="mx-auto w-16 h-16 flex items-center justify-center mb-6 border border-border group-hover:border-primary group-hover:text-primary transition-colors">
                 <Shield className="h-7 w-7" />
               </div>
               <h3 className="text-sm font-medium tracking-wide uppercase mb-3">Kostenlose Basis</h3>
@@ -107,16 +107,16 @@ export default function Home() {
       </section>
 
       {/* Featured Tools Section */}
-      <section className="py-32 px-6 bg-secondary/30">
+      <section className="py-32 px-6 bg-muted/30">
         <div className="container max-w-6xl mx-auto">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-16">
             <div>
-              <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground mb-4">Unsere Werkzeuge</p>
+              <p className="text-sm tracking-[0.2em] uppercase text-primary mb-4">Unsere Werkzeuge</p>
               <h2 className="text-4xl md:text-5xl font-bold tracking-tight">BELIEBTE TOOLS</h2>
             </div>
             <Link
               href="/tools"
-              className="group inline-flex items-center text-sm font-medium tracking-wide uppercase text-muted-foreground hover:text-foreground transition-colors"
+              className="group inline-flex items-center text-sm font-medium tracking-wide uppercase text-muted-foreground hover:text-primary transition-colors"
             >
               Alle anzeigen
               <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -131,10 +131,10 @@ export default function Home() {
       </section>
 
       {/* Free Tools Section */}
-      <section className="py-32 px-6 border-t border-white/10">
+      <section className="py-32 px-6 border-t border-border">
         <div className="container max-w-5xl mx-auto">
           <div className="text-center mb-16">
-            <p className="text-sm tracking-[0.2em] uppercase text-muted-foreground mb-4">Sofort starten</p>
+            <p className="text-sm tracking-[0.2em] uppercase text-primary mb-4">Sofort starten</p>
             <h2 className="text-4xl md:text-5xl font-bold tracking-tight">KOSTENLOSE TOOLS</h2>
             <p className="text-muted-foreground mt-4">
               Ohne Registrierung nutzbar
@@ -149,7 +149,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-32 px-6 bg-secondary/30 border-t border-white/10">
+      <section className="py-32 px-6 bg-muted/30 border-t border-border">
         <div className="container max-w-3xl mx-auto text-center">
           <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
             BEREIT FÜR
@@ -162,13 +162,13 @@ export default function Home() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/register"
-              className="inline-flex items-center justify-center px-8 py-4 text-sm font-medium tracking-wide uppercase bg-white text-black hover:bg-white/90 transition-all"
+              className="inline-flex items-center justify-center px-8 py-4 text-sm font-medium tracking-wide uppercase bg-primary text-primary-foreground hover:bg-primary/90 transition-all"
             >
               Kostenlos registrieren
             </Link>
             <Link
               href="/tools"
-              className="inline-flex items-center justify-center px-8 py-4 text-sm font-medium tracking-wide uppercase border border-white/20 hover:bg-white/5 transition-all"
+              className="inline-flex items-center justify-center px-8 py-4 text-sm font-medium tracking-wide uppercase border border-border hover:bg-muted transition-all"
             >
               Tools ansehen
             </Link>
