@@ -51,6 +51,7 @@ export const TOOLS: Tool[] = [
     accessLevel: 'registered',
     htmlFile: 'holz-schindel.html',
     icon: 'LayoutGrid',
+    useNativeComponent: true,
   },
   {
     slug: 'verschnittoptimierung',
