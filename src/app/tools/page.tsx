@@ -34,37 +34,40 @@ export default async function ToolsPage({ searchParams }: ToolsPageProps) {
 
       {/* Filter */}
       <div className="flex flex-wrap gap-2 mb-8">
-        <Badge
-          variant={!filter && !category ? 'default' : 'outline'}
-          className="cursor-pointer"
-          asChild
-        >
-          <a href="/tools">Alle</a>
-        </Badge>
-        <Badge
-          variant={filter === 'free' ? 'default' : 'outline'}
-          className="cursor-pointer"
-          asChild
-        >
-          <a href="/tools?filter=free">Kostenlos</a>
-        </Badge>
-        <Badge
-          variant={filter === 'premium' ? 'default' : 'outline'}
-          className="cursor-pointer"
-          asChild
-        >
-          <a href="/tools?filter=premium">Premium</a>
-        </Badge>
+        <a href="/tools">
+          <Badge
+            variant={!filter && !category ? 'default' : 'outline'}
+            className="cursor-pointer hover:bg-primary/80"
+          >
+            Alle
+          </Badge>
+        </a>
+        <a href="/tools?filter=free">
+          <Badge
+            variant={filter === 'free' ? 'default' : 'outline'}
+            className="cursor-pointer hover:bg-primary/80"
+          >
+            Kostenlos
+          </Badge>
+        </a>
+        <a href="/tools?filter=premium">
+          <Badge
+            variant={filter === 'premium' ? 'default' : 'outline'}
+            className="cursor-pointer hover:bg-primary/80"
+          >
+            Premium
+          </Badge>
+        </a>
         <span className="mx-2 text-muted-foreground">|</span>
         {CATEGORIES.map((cat) => (
-          <Badge
-            key={cat}
-            variant={category === cat ? 'default' : 'outline'}
-            className="cursor-pointer"
-            asChild
-          >
-            <a href={`/tools?category=${encodeURIComponent(cat)}`}>{cat}</a>
-          </Badge>
+          <a key={cat} href={`/tools?category=${encodeURIComponent(cat)}`}>
+            <Badge
+              variant={category === cat ? 'default' : 'outline'}
+              className="cursor-pointer hover:bg-primary/80"
+            >
+              {cat}
+            </Badge>
+          </a>
         ))}
       </div>
 
