@@ -1,55 +1,67 @@
 'use client';
 
 import Link from 'next/link';
-import { Wrench, Menu, X } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container flex h-16 items-center justify-between px-4">
-        <Link href="/" className="flex items-center gap-2">
-          <Wrench className="h-6 w-6 text-primary" />
-          <span className="text-xl font-bold">Kofler ToolBox</span>
+    <header className="fixed top-0 left-0 right-0 z-50 glass">
+      <div className="container max-w-7xl mx-auto flex h-20 items-center justify-between px-6">
+        <Link href="/" className="flex items-center gap-3">
+          <span className="text-2xl font-bold tracking-tight">KOFLER</span>
+          <span className="text-sm text-muted-foreground font-light tracking-widest uppercase">ToolBox</span>
         </Link>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-10">
           <Link
             href="/tools"
-            className="text-sm font-medium transition-colors hover:text-primary"
+            className="text-sm font-medium tracking-wide uppercase text-muted-foreground hover:text-foreground transition-colors"
           >
             Alle Tools
           </Link>
           <Link
             href="/tools?filter=free"
-            className="text-sm font-medium transition-colors hover:text-primary"
+            className="text-sm font-medium tracking-wide uppercase text-muted-foreground hover:text-foreground transition-colors"
           >
             Kostenlos
           </Link>
           <Link
             href="/tools?filter=premium"
-            className="text-sm font-medium transition-colors hover:text-primary"
+            className="text-sm font-medium tracking-wide uppercase text-muted-foreground hover:text-foreground transition-colors"
           >
             Premium
+          </Link>
+          <Link
+            href="https://turmdecker.com"
+            target="_blank"
+            className="text-sm font-medium tracking-wide uppercase text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Turmdecker
           </Link>
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          <Button variant="outline" asChild>
-            <Link href="/login">Anmelden</Link>
-          </Button>
-          <Button asChild>
-            <Link href="/register">Registrieren</Link>
-          </Button>
+          <Link
+            href="/login"
+            className="text-sm font-medium tracking-wide uppercase text-muted-foreground hover:text-foreground transition-colors"
+          >
+            Anmelden
+          </Link>
+          <Link
+            href="/register"
+            className="px-6 py-2.5 text-sm font-medium tracking-wide uppercase bg-white text-black hover:bg-white/90 transition-colors"
+          >
+            Registrieren
+          </Link>
         </div>
 
         {/* Mobile Menu Button */}
         <button
-          className="md:hidden"
+          className="md:hidden p-2"
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           aria-label="Menu"
         >
@@ -59,40 +71,40 @@ export function Header() {
 
       {/* Mobile Navigation */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t bg-background">
-          <nav className="container flex flex-col gap-4 p-4">
+        <div className="md:hidden glass border-t border-white/10">
+          <nav className="container flex flex-col gap-1 p-6">
             <Link
               href="/tools"
-              className="text-sm font-medium"
+              className="py-3 text-sm font-medium tracking-wide uppercase text-muted-foreground hover:text-foreground"
               onClick={() => setMobileMenuOpen(false)}
             >
               Alle Tools
             </Link>
             <Link
               href="/tools?filter=free"
-              className="text-sm font-medium"
+              className="py-3 text-sm font-medium tracking-wide uppercase text-muted-foreground hover:text-foreground"
               onClick={() => setMobileMenuOpen(false)}
             >
               Kostenlos
             </Link>
             <Link
               href="/tools?filter=premium"
-              className="text-sm font-medium"
+              className="py-3 text-sm font-medium tracking-wide uppercase text-muted-foreground hover:text-foreground"
               onClick={() => setMobileMenuOpen(false)}
             >
               Premium
             </Link>
-            <hr />
+            <div className="h-px bg-white/10 my-3" />
             <Link
               href="/login"
-              className="text-sm font-medium"
+              className="py-3 text-sm font-medium tracking-wide uppercase"
               onClick={() => setMobileMenuOpen(false)}
             >
               Anmelden
             </Link>
             <Link
               href="/register"
-              className="text-sm font-medium text-primary"
+              className="mt-2 py-3 text-center text-sm font-medium tracking-wide uppercase bg-white text-black"
               onClick={() => setMobileMenuOpen(false)}
             >
               Registrieren
