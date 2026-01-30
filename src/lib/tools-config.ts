@@ -71,6 +71,7 @@ export const TOOLS: Tool[] = [
     accessLevel: 'premium',
     htmlFile: 'restauromap.html',
     icon: 'Map',
+    useNativeComponent: true,
   },
   {
     slug: 'laser-entfernungsmesser',
@@ -80,6 +81,7 @@ export const TOOLS: Tool[] = [
     accessLevel: 'premium',
     htmlFile: 'laser-entfernungsmesser.html',
     icon: 'Scan',
+    useNativeComponent: true,
   },
 ];
 

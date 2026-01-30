@@ -8,6 +8,8 @@ import { HolzTools } from '@/components/tools/HolzTools';
 import { Kegelstumpf } from '@/components/tools/Kegelstumpf';
 import { HolzSchindel } from '@/components/tools/HolzSchindel';
 import { Verschnittoptimierung } from '@/components/tools/Verschnittoptimierung';
+import { RestauroMap } from '@/components/tools/RestauroMap';
+import { LaserEntfernungsmesser } from '@/components/tools/LaserEntfernungsmesser';
 
 interface ToolPageProps {
   params: Promise<{ slug: string }>;
@@ -128,6 +130,8 @@ export default async function ToolPage({ params }: ToolPageProps) {
               {tool.slug === 'kegelstumpf' && <Kegelstumpf />}
               {tool.slug === 'holz-schindel' && <HolzSchindel />}
               {tool.slug === 'verschnittoptimierung' && <Verschnittoptimierung />}
+              {tool.slug === 'restauromap' && <RestauroMap />}
+              {tool.slug === 'laser-entfernungsmesser' && <LaserEntfernungsmesser />}
             </>
           ) : (
             // Show tool iframe for other tools
