@@ -143,7 +143,14 @@ export function RestauroMap() {
   const [activeImage, setActiveImage] = useState<HTMLImageElement | null>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawingPoints, setDrawingPoints] = useState<{ x: number; y: number }[]>([]);
-  const [transform, setTransform] = useState<DOMMatrix>(new DOMMatrix());
+  const [transform, setTransform] = useState<DOMMatrix>(() => {
+    // DOMMatrix is only available in the browser
+    if (typeof window !== 'undefined') {
+      return new DOMMatrix();
+    }
+    // Return a placeholder for SSR that matches DOMMatrix shape
+    return { a: 1, b: 0, c: 0, d: 1, e: 0, f: 0, toString: () => 'matrix(1, 0, 0, 1, 0, 0)' } as unknown as DOMMatrix;
+  });
   const [hoveredAreaId, setHoveredAreaId] = useState<number | null>(null);
   const pointerState = useRef({
     isDown: false,
