@@ -7,6 +7,7 @@ import { SparrenlaengenRechner } from '@/components/tools/SparrenlaengenRechner'
 import { HolzTools } from '@/components/tools/HolzTools';
 import { Kegelstumpf } from '@/components/tools/Kegelstumpf';
 import { HolzSchindel } from '@/components/tools/HolzSchindel';
+import { Verschnittoptimierung } from '@/components/tools/Verschnittoptimierung';
 
 interface ToolPageProps {
   params: Promise<{ slug: string }>;
@@ -126,6 +127,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
               {tool.slug === 'holz-tools' && <HolzTools />}
               {tool.slug === 'kegelstumpf' && <Kegelstumpf />}
               {tool.slug === 'holz-schindel' && <HolzSchindel />}
+              {tool.slug === 'verschnittoptimierung' && <Verschnittoptimierung />}
             </>
           ) : (
             // Show tool iframe for other tools

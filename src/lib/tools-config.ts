@@ -61,6 +61,7 @@ export const TOOLS: Tool[] = [
     accessLevel: 'registered',
     htmlFile: 'verschnittoptimierung.html',
     icon: 'Scissors',
+    useNativeComponent: true,
   },
   {
     slug: 'restauromap',
