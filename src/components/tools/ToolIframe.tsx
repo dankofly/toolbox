@@ -14,21 +14,28 @@ export function ToolIframe({ htmlFile, title }: ToolIframeProps) {
   const [fullscreen, setFullscreen] = useState(false);
 
   return (
-    <div className={`relative ${fullscreen ? 'fixed inset-0 z-50 bg-background' : ''}`}>
+    <div className={`relative ${fullscreen ? 'fixed inset-0 z-50 bg-background' : 'border border-border'}`}>
       {/* Toolbar */}
-      <div className="flex items-center justify-between p-2 bg-muted border-b">
-        <span className="text-sm font-medium truncate">{title}</span>
+      <div className="flex items-center justify-between px-4 py-3 bg-muted/50 border-b border-border">
+        <span className="text-sm font-medium tracking-wide">{title}</span>
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setFullscreen(!fullscreen)}
             aria-label={fullscreen ? 'Vollbild beenden' : 'Vollbild'}
+            className="text-muted-foreground hover:text-foreground"
           >
             {fullscreen ? (
-              <Minimize2 className="h-4 w-4" />
+              <>
+                <Minimize2 className="h-4 w-4 mr-2" />
+                <span className="text-xs uppercase tracking-wide">Beenden</span>
+              </>
             ) : (
-              <Maximize2 className="h-4 w-4" />
+              <>
+                <Maximize2 className="h-4 w-4 mr-2" />
+                <span className="text-xs uppercase tracking-wide">Vollbild</span>
+              </>
             )}
           </Button>
         </div>
@@ -36,7 +43,7 @@ export function ToolIframe({ htmlFile, title }: ToolIframeProps) {
 
       {/* Loading indicator */}
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center bg-background/80 z-10 mt-10">
+        <div className="absolute inset-0 flex items-center justify-center bg-background/80 z-10 mt-12">
           <Loader2 className="h-8 w-8 animate-spin text-primary" />
         </div>
       )}
@@ -45,7 +52,7 @@ export function ToolIframe({ htmlFile, title }: ToolIframeProps) {
       <iframe
         src={`/tools/${htmlFile}`}
         title={title}
-        className={`w-full border-0 ${fullscreen ? 'h-[calc(100vh-48px)]' : 'h-[calc(100vh-200px)] min-h-[600px]'}`}
+        className={`w-full border-0 ${fullscreen ? 'h-[calc(100vh-52px)]' : 'min-h-[700px]'}`}
         onLoad={() => setLoading(false)}
         sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-downloads"
       />

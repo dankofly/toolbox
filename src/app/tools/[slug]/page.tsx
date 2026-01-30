@@ -46,9 +46,9 @@ export default async function ToolPage({ params }: ToolPageProps) {
   const requiresAuth = tool.accessLevel !== 'free';
 
   return (
-    <div className="flex flex-col min-h-screen pt-20">
-      {/* Header */}
-      <div className="border-b border-border bg-muted/30 px-6 py-6">
+    <div className="flex flex-col pt-20">
+      {/* Tool Header */}
+      <div className="border-b border-border bg-muted/30 px-6 py-8">
         <div className="container max-w-6xl mx-auto">
           <Link
             href="/tools"
@@ -78,47 +78,49 @@ export default async function ToolPage({ params }: ToolPageProps) {
       </div>
 
       {/* Tool Content */}
-      <div className="flex-1">
-        {requiresAuth ? (
-          // Show auth required message for non-free tools (MVP - no auth yet)
-          <div className="container max-w-2xl mx-auto py-24 px-6 text-center">
-            <div className="w-20 h-20 mx-auto flex items-center justify-center border border-border mb-8">
-              {tool.accessLevel === 'premium' ? (
-                <Crown className="h-10 w-10 text-primary" />
-              ) : (
-                <Lock className="h-10 w-10 text-muted-foreground" />
-              )}
+      <section className="py-8 px-6">
+        <div className="container max-w-6xl mx-auto">
+          {requiresAuth ? (
+            // Show auth required message for non-free tools (MVP - no auth yet)
+            <div className="max-w-2xl mx-auto py-16 text-center">
+              <div className="w-20 h-20 mx-auto flex items-center justify-center border border-border mb-8">
+                {tool.accessLevel === 'premium' ? (
+                  <Crown className="h-10 w-10 text-primary" />
+                ) : (
+                  <Lock className="h-10 w-10 text-muted-foreground" />
+                )}
+              </div>
+              <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-4">
+                {tool.accessLevel === 'premium'
+                  ? 'PREMIUM-TOOL'
+                  : 'REGISTRIERUNG ERFORDERLICH'}
+              </h2>
+              <p className="text-muted-foreground mb-10 max-w-md mx-auto">
+                {tool.accessLevel === 'premium'
+                  ? 'Dieses Tool ist Teil unseres Premium-Angebots. Registrieren Sie sich, um Zugang zu erhalten.'
+                  : 'Um dieses Tool zu nutzen, müssen Sie sich kostenlos registrieren.'}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4 justify-center">
+                <Link
+                  href="/register"
+                  className="px-8 py-4 text-sm font-medium tracking-wide uppercase bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
+                >
+                  Kostenlos registrieren
+                </Link>
+                <Link
+                  href="/login"
+                  className="px-8 py-4 text-sm font-medium tracking-wide uppercase border border-border hover:bg-muted transition-colors"
+                >
+                  Anmelden
+                </Link>
+              </div>
             </div>
-            <h2 className="text-2xl md:text-3xl font-bold tracking-tight mb-4">
-              {tool.accessLevel === 'premium'
-                ? 'PREMIUM-TOOL'
-                : 'REGISTRIERUNG ERFORDERLICH'}
-            </h2>
-            <p className="text-muted-foreground mb-10 max-w-md mx-auto">
-              {tool.accessLevel === 'premium'
-                ? 'Dieses Tool ist Teil unseres Premium-Angebots. Registrieren Sie sich, um Zugang zu erhalten.'
-                : 'Um dieses Tool zu nutzen, müssen Sie sich kostenlos registrieren.'}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/register"
-                className="px-8 py-4 text-sm font-medium tracking-wide uppercase bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-              >
-                Kostenlos registrieren
-              </Link>
-              <Link
-                href="/login"
-                className="px-8 py-4 text-sm font-medium tracking-wide uppercase border border-border hover:bg-muted transition-colors"
-              >
-                Anmelden
-              </Link>
-            </div>
-          </div>
-        ) : (
-          // Show tool iframe for free tools
-          <ToolIframe htmlFile={tool.htmlFile} title={tool.name} />
-        )}
-      </div>
+          ) : (
+            // Show tool iframe for free tools
+            <ToolIframe htmlFile={tool.htmlFile} title={tool.name} />
+          )}
+        </div>
+      </section>
     </div>
   );
 }
