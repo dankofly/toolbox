@@ -5,6 +5,7 @@ import { getToolBySlug, TOOLS } from '@/lib/tools-config';
 import { ToolIframe } from '@/components/tools/ToolIframe';
 import { SparrenlaengenRechner } from '@/components/tools/SparrenlaengenRechner';
 import { HolzTools } from '@/components/tools/HolzTools';
+import { Kegelstumpf } from '@/components/tools/Kegelstumpf';
 
 interface ToolPageProps {
   params: Promise<{ slug: string }>;
@@ -122,6 +123,7 @@ export default async function ToolPage({ params }: ToolPageProps) {
             <>
               {tool.slug === 'sparrenlaengen-rechner' && <SparrenlaengenRechner />}
               {tool.slug === 'holz-tools' && <HolzTools />}
+              {tool.slug === 'kegelstumpf' && <Kegelstumpf />}
             </>
           ) : (
             // Show tool iframe for other tools

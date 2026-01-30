@@ -41,6 +41,7 @@ export const TOOLS: Tool[] = [
     accessLevel: 'registered',
     htmlFile: 'kegelstumpf.html',
     icon: 'Cone',
+    useNativeComponent: true,
   },
   {
     slug: 'holz-schindel',
