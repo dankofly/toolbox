@@ -31,6 +31,7 @@ export const TOOLS: Tool[] = [
     accessLevel: 'free',
     htmlFile: 'holz-tools.html',
     icon: 'TreePine',
+    useNativeComponent: true,
   },
   {
     slug: 'kegelstumpf',

@@ -4,6 +4,7 @@ import { ArrowLeft, Lock, Crown } from 'lucide-react';
 import { getToolBySlug, TOOLS } from '@/lib/tools-config';
 import { ToolIframe } from '@/components/tools/ToolIframe';
 import { SparrenlaengenRechner } from '@/components/tools/SparrenlaengenRechner';
+import { HolzTools } from '@/components/tools/HolzTools';
 
 interface ToolPageProps {
   params: Promise<{ slug: string }>;
@@ -118,7 +119,10 @@ export default async function ToolPage({ params }: ToolPageProps) {
             </div>
           ) : tool.useNativeComponent ? (
             // Render native React component
-            tool.slug === 'sparrenlaengen-rechner' && <SparrenlaengenRechner />
+            <>
+              {tool.slug === 'sparrenlaengen-rechner' && <SparrenlaengenRechner />}
+              {tool.slug === 'holz-tools' && <HolzTools />}
+            </>
           ) : (
             // Show tool iframe for other tools
             <ToolIframe htmlFile={tool.htmlFile} title={tool.name} />
