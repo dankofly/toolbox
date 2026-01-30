@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { ArrowLeft, Plus, Download, Upload, Shield, Building2, Moon, Sun, Trash2, Camera, Image as ImageIcon, FileText, ZoomIn, ZoomOut, Maximize2, X, Check, Edit2 } from 'lucide-react';
+import { ArrowLeft, Plus, Download, Upload, Building2, Trash2, Camera, Image as ImageIcon, FileText, ZoomIn, ZoomOut, Maximize2, Edit2 } from 'lucide-react';
 
 // Types
 interface Project {
@@ -96,6 +96,14 @@ const dbOperation = async <T,>(
   });
 };
 
+// Helper to check dark mode from website theme
+const isDarkMode = () => {
+  if (typeof document !== 'undefined') {
+    return document.documentElement.classList.contains('dark');
+  }
+  return false;
+};
+
 export function RestauroMap() {
   // State
   const [currentPage, setCurrentPage] = useState<PageId>('projects');
@@ -106,7 +114,6 @@ export function RestauroMap() {
   const [entries, setEntries] = useState<Entry[]>([]);
   const [currentProject, setCurrentProject] = useState<Project | null>(null);
   const [currentArea, setCurrentArea] = useState<Area | null>(null);
-  const [darkMode, setDarkMode] = useState(false);
   const [loading, setLoading] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' | 'info' } | null>(null);
 
@@ -227,8 +234,6 @@ export function RestauroMap() {
   useEffect(() => {
     loadProjects();
     loadCompany();
-    const savedTheme = localStorage.getItem('restauromap-theme');
-    if (savedTheme === 'dark') setDarkMode(true);
   }, [loadProjects, loadCompany]);
 
   // Navigation
@@ -308,7 +313,6 @@ export function RestauroMap() {
       onConfirm: async () => {
         setLoading(true);
         try {
-          // Delete all entries and areas first
           const projectAreas = await loadAreas(id);
           for (const area of projectAreas) {
             const areaEntries = await loadEntries(area.id);
@@ -512,7 +516,6 @@ export function RestauroMap() {
         throw new Error('Ungültige Datei');
       }
 
-      // Clear all stores
       const db = await openDB();
       await Promise.all(['projekte', 'areas', 'eintraege', 'firmendaten'].map(
         (storeName) =>
@@ -524,7 +527,6 @@ export function RestauroMap() {
           })
       ));
 
-      // Import data
       for (const item of data.projekte) {
         await dbOperation('projekte', 'readwrite', (store) => store.put(item));
       }
@@ -585,7 +587,6 @@ export function RestauroMap() {
     if (currentPage !== 'cockpit' || !canvasRef.current || !activeImage) return;
 
     const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d', { alpha: false })!;
     const dpr = window.devicePixelRatio || 1;
     const rect = canvas.parentElement!.getBoundingClientRect();
 
@@ -594,7 +595,6 @@ export function RestauroMap() {
     canvas.width = Math.floor(rect.width * dpr);
     canvas.height = Math.floor(rect.height * dpr);
 
-    // Reset transform to fit image
     const cw = canvas.width / dpr;
     const ch = canvas.height / dpr;
     const scale = Math.min(cw / activeImage.naturalWidth, ch / activeImage.naturalHeight);
@@ -614,9 +614,10 @@ export function RestauroMap() {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d', { alpha: false })!;
     const dpr = window.devicePixelRatio || 1;
+    const dark = isDarkMode();
 
     ctx.setTransform(1, 0, 0, 1, 0, 0);
-    ctx.fillStyle = darkMode ? '#1c1c1e' : '#f2f2f7';
+    ctx.fillStyle = dark ? '#1c1c1e' : '#f5f5f5';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     ctx.setTransform(
@@ -697,7 +698,7 @@ export function RestauroMap() {
         ctx.stroke();
       }
     }
-  }, [activeImage, areas, drawingPoints, transform, hoveredAreaId, darkMode]);
+  }, [activeImage, areas, drawingPoints, transform, hoveredAreaId]);
 
   useEffect(() => {
     if (currentPage === 'cockpit') {
@@ -807,7 +808,6 @@ export function RestauroMap() {
     pointerState.current.pointers.delete(e.pointerId);
 
     if (!pointerState.current.didMove) {
-      // Handle click
       const p = getWorldCoords(e.clientX, e.clientY);
       if (isDrawing) {
         if (drawingPoints.length >= 3) {
@@ -983,7 +983,6 @@ export function RestauroMap() {
     const p = getAnnotatorPoint(e);
 
     if (annotatorTool === 'select') {
-      // Find topmost shape under pointer
       let found = -1;
       for (let i = annotatorShapes.length - 1; i >= 0; i--) {
         if (hitTestShape(annotatorShapes[i], p)) {
@@ -1110,23 +1109,16 @@ export function RestauroMap() {
     }
   };
 
-  // Theme toggle
-  const toggleTheme = () => {
-    const newMode = !darkMode;
-    setDarkMode(newMode);
-    localStorage.setItem('restauromap-theme', newMode ? 'dark' : 'light');
-  };
-
   // Color palette for annotator
   const colorPalette = ['#ff3b30', '#ff9500', '#ffcc00', '#34c759', '#8f1d1d', '#5856d6', '#ff2d55', '#000000', '#ffffff'];
 
   return (
-    <div className={`flex flex-col h-[calc(100vh-200px)] min-h-[600px] ${darkMode ? 'bg-[#000000] text-white' : 'bg-white text-black'}`}>
+    <div className="space-y-6">
       {/* Toast */}
       {toast && (
         <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[2000]">
           <div className={`px-5 py-3 rounded-2xl text-white font-medium shadow-lg ${
-            toast.type === 'success' ? 'bg-green-500' : toast.type === 'error' ? 'bg-red-500' : 'bg-[#8f1d1d]'
+            toast.type === 'success' ? 'bg-green-500' : toast.type === 'error' ? 'bg-red-500' : 'bg-primary'
           }`}>
             {toast.message}
           </div>
@@ -1136,49 +1128,52 @@ export function RestauroMap() {
       {/* Loading Overlay */}
       {loading && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[3000]">
-          <div className="w-12 h-12 border-4 border-gray-300 border-b-[#8f1d1d] rounded-full animate-spin" />
+          <div className="w-12 h-12 border-4 border-muted border-b-primary rounded-full animate-spin" />
         </div>
       )}
 
       {/* Projects Page */}
       {currentPage === 'projects' && (
-        <div className="flex flex-col h-full">
-          <div className={`px-4 py-3 border-b flex items-center justify-between ${darkMode ? 'bg-[#1c1c1e] border-gray-700' : 'bg-white border-gray-200'}`}>
-            <h1 className="text-lg font-semibold">RestauroMap</h1>
+        <div className="space-y-4">
+          <div className="bg-card border border-border rounded-xl p-4 flex items-center justify-between">
+            <h2 className="text-lg font-semibold">Projekte</h2>
             <div className="flex items-center gap-2">
               <input type="file" ref={importInputRef} className="hidden" accept=".json" onChange={(e) => e.target.files?.[0] && importBackup(e.target.files[0])} />
-              <button onClick={() => importInputRef.current?.click()} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" title="Import">
-                <Upload className="w-5 h-5 text-[#8f1d1d]" />
+              <button onClick={() => importInputRef.current?.click()} className="p-2 rounded-lg hover:bg-muted" title="Import">
+                <Upload className="w-5 h-5 text-primary" />
               </button>
-              <button onClick={exportBackup} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" title="Backup">
-                <Download className="w-5 h-5 text-[#8f1d1d]" />
+              <button onClick={exportBackup} className="p-2 rounded-lg hover:bg-muted" title="Backup">
+                <Download className="w-5 h-5 text-primary" />
               </button>
-              <button onClick={() => setShowCompanyModal(true)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800" title="Firmendaten">
-                <Building2 className="w-5 h-5 text-[#8f1d1d]" />
+              <button onClick={() => setShowCompanyModal(true)} className="p-2 rounded-lg hover:bg-muted" title="Firmendaten">
+                <Building2 className="w-5 h-5 text-primary" />
               </button>
-              <button onClick={toggleTheme} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-                {darkMode ? <Sun className="w-5 h-5 text-[#8f1d1d]" /> : <Moon className="w-5 h-5 text-[#8f1d1d]" />}
+              <button
+                onClick={() => setShowNewProjectModal(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90"
+              >
+                <Plus className="w-4 h-4" /> Neues Projekt
               </button>
             </div>
           </div>
 
-          <div className={`flex-1 overflow-y-auto p-4 ${darkMode ? 'bg-[#1c1c1e]' : 'bg-gray-100'}`}>
-            {projects.length === 0 ? (
-              <div className="text-center py-10 text-gray-500">
-                <div className="text-5xl mb-4 opacity-50">📋</div>
-                <p>Keine Projekte vorhanden.<br />Klicken Sie auf + um zu beginnen.</p>
-              </div>
-            ) : (
-              projects.map((p) => (
+          {projects.length === 0 ? (
+            <div className="bg-card border border-border rounded-xl p-10 text-center">
+              <div className="text-5xl mb-4 opacity-50">📋</div>
+              <p className="text-muted-foreground">Keine Projekte vorhanden.<br />Erstellen Sie ein neues Projekt um zu beginnen.</p>
+            </div>
+          ) : (
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+              {projects.map((p) => (
                 <div
                   key={p.id}
-                  className={`p-4 rounded-xl mb-3 cursor-pointer transition-all ${darkMode ? 'bg-[#2c2c2e] hover:bg-[#3c3c3e]' : 'bg-white hover:shadow-md'}`}
+                  className="bg-card border border-border rounded-xl p-4 cursor-pointer hover:border-primary transition-colors"
                   onClick={() => navigateTo('cockpit', p.id)}
                 >
                   <div className="flex justify-between items-start">
                     <div>
                       <h3 className="font-semibold text-lg">{p.name}</h3>
-                      <p className={darkMode ? 'text-gray-400' : 'text-gray-600'}>{p.ort}</p>
+                      <p className="text-muted-foreground text-sm">{p.ort}</p>
                     </div>
                     <button
                       onClick={(e) => { e.stopPropagation(); deleteProject(p.id, p.name); }}
@@ -1188,29 +1183,22 @@ export function RestauroMap() {
                     </button>
                   </div>
                 </div>
-              ))
-            )}
-          </div>
-
-          <button
-            onClick={() => setShowNewProjectModal(true)}
-            className="fixed bottom-8 right-8 w-14 h-14 bg-[#8f1d1d] text-white rounded-full shadow-lg flex items-center justify-center text-2xl hover:bg-[#7a1919] z-50"
-          >
-            <Plus className="w-6 h-6" />
-          </button>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
       {/* Cockpit Page */}
       {currentPage === 'cockpit' && (
-        <div className="flex flex-col h-full">
-          <div className={`px-4 py-3 border-b flex items-center justify-between flex-wrap gap-2 ${darkMode ? 'bg-[#1c1c1e] border-gray-700' : 'bg-white border-gray-200'}`}>
-            <button onClick={() => navigateTo('projects')} className="p-2 -ml-2">
-              <ArrowLeft className="w-5 h-5 text-[#8f1d1d]" />
+        <div className="space-y-4">
+          <div className="bg-card border border-border rounded-xl p-4 flex items-center justify-between flex-wrap gap-2">
+            <button onClick={() => navigateTo('projects')} className="p-2 rounded-lg hover:bg-muted">
+              <ArrowLeft className="w-5 h-5 text-primary" />
             </button>
             <span className="font-semibold flex-1 text-center truncate">{currentProject?.name}</span>
             <div className="flex items-center gap-2 flex-wrap">
-              <button onClick={() => setShowAreaListModal(true)} className={`px-3 py-1.5 text-sm rounded-lg ${darkMode ? 'bg-[#2c2c2e]' : 'bg-gray-100'}`}>
+              <button onClick={() => setShowAreaListModal(true)} className="px-3 py-1.5 text-sm rounded-lg bg-muted hover:bg-muted/80">
                 📋 Bereiche
               </button>
               <button
@@ -1223,28 +1211,28 @@ export function RestauroMap() {
                     showToast('Tippen Sie um Punkte zu setzen', 'info');
                   }
                 }}
-                className={`px-3 py-1.5 text-sm rounded-lg ${isDrawing ? 'bg-orange-500 text-white' : 'bg-[#8f1d1d] text-white'}`}
+                className={`px-3 py-1.5 text-sm rounded-lg ${isDrawing ? 'bg-orange-500 text-white' : 'bg-primary text-primary-foreground'}`}
               >
-                {isDrawing ? '✖️ Abbrechen' : '[+] Bereich'}
+                {isDrawing ? 'Abbrechen' : '[+] Bereich'}
               </button>
               {isDrawing && drawingPoints.length >= 3 && (
                 <button onClick={() => setShowNewAreaModal(true)} className="px-3 py-1.5 text-sm rounded-lg bg-green-500 text-white">
-                  ✓ Fertig
+                  Fertig
                 </button>
               )}
-              <button onClick={fitToScreen} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-                <Maximize2 className="w-4 h-4 text-[#8f1d1d]" />
+              <button onClick={fitToScreen} className="p-2 rounded-lg hover:bg-muted">
+                <Maximize2 className="w-4 h-4 text-primary" />
               </button>
-              <button onClick={() => zoomCanvas(1 / 1.3, canvasRef.current!.width / 2, canvasRef.current!.height / 2)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-                <ZoomOut className="w-4 h-4 text-[#8f1d1d]" />
+              <button onClick={() => zoomCanvas(1 / 1.3, canvasRef.current!.width / 2, canvasRef.current!.height / 2)} className="p-2 rounded-lg hover:bg-muted">
+                <ZoomOut className="w-4 h-4 text-primary" />
               </button>
-              <button onClick={() => zoomCanvas(1.3, canvasRef.current!.width / 2, canvasRef.current!.height / 2)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-                <ZoomIn className="w-4 h-4 text-[#8f1d1d]" />
+              <button onClick={() => zoomCanvas(1.3, canvasRef.current!.width / 2, canvasRef.current!.height / 2)} className="p-2 rounded-lg hover:bg-muted">
+                <ZoomIn className="w-4 h-4 text-primary" />
               </button>
             </div>
           </div>
 
-          <div className={`flex-1 relative ${darkMode ? 'bg-[#1c1c1e]' : 'bg-gray-100'}`}>
+          <div className="bg-card border border-border rounded-xl overflow-hidden aspect-[4/3]">
             <canvas
               ref={canvasRef}
               className={`w-full h-full ${isDrawing ? 'cursor-crosshair' : hoveredAreaId ? 'cursor-pointer' : 'cursor-grab'}`}
@@ -1267,26 +1255,40 @@ export function RestauroMap() {
 
       {/* Details Page */}
       {currentPage === 'details' && currentArea && (
-        <div className="flex flex-col h-full">
-          <div className={`px-4 py-3 border-b flex items-center justify-between ${darkMode ? 'bg-[#1c1c1e] border-gray-700' : 'bg-white border-gray-200'}`}>
-            <button onClick={() => navigateTo('cockpit', currentProjectId!)} className="p-2 -ml-2">
-              <ArrowLeft className="w-5 h-5 text-[#8f1d1d]" />
+        <div className="space-y-4">
+          <div className="bg-card border border-border rounded-xl p-4 flex items-center justify-between">
+            <button onClick={() => navigateTo('cockpit', currentProjectId!)} className="p-2 rounded-lg hover:bg-muted">
+              <ArrowLeft className="w-5 h-5 text-primary" />
             </button>
             <span className="font-semibold flex-1 text-center truncate">{currentArea.name}</span>
-            <button onClick={deleteArea} className="px-3 py-1.5 bg-red-500 text-white text-sm rounded-lg">
+            <button onClick={deleteArea} className="px-3 py-1.5 bg-red-500 text-white text-sm rounded-lg hover:bg-red-600">
               Löschen
             </button>
           </div>
 
-          <div className={`flex-1 overflow-y-auto p-4 pb-24 ${darkMode ? 'bg-[#1c1c1e]' : 'bg-gray-100'}`}>
-            {entries.length === 0 ? (
-              <div className="text-center py-10 text-gray-500">
-                <div className="text-5xl mb-4 opacity-50">📝</div>
-                <p>Keine Einträge.<br />Fügen Sie Fotos oder Notizen hinzu.</p>
-              </div>
-            ) : (
-              [...entries].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).map((entry, index, arr) => (
-                <div key={entry.id} className={`p-4 rounded-xl mb-3 ${darkMode ? 'bg-[#2c2c2e]' : 'bg-white'}`}>
+          <div className="flex flex-wrap gap-3 justify-center">
+            <input type="file" ref={cameraInputRef} className="hidden" accept="image/*" capture="environment" onChange={(e) => e.target.files?.[0] && handleFotoUpload(e.target.files[0], 'camera')} />
+            <input type="file" ref={galleryInputRef} className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFotoUpload(e.target.files[0], 'gallery')} />
+            <button onClick={() => cameraInputRef.current?.click()} className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90">
+              <Camera className="w-5 h-5" /> Kamera
+            </button>
+            <button onClick={() => galleryInputRef.current?.click()} className="flex items-center gap-2 px-5 py-2.5 bg-muted rounded-lg hover:bg-muted/80">
+              <ImageIcon className="w-5 h-5" /> Galerie
+            </button>
+            <button onClick={() => setShowNewEntryModal(true)} className="flex items-center gap-2 px-5 py-2.5 bg-muted rounded-lg hover:bg-muted/80">
+              <FileText className="w-5 h-5" /> Notiz
+            </button>
+          </div>
+
+          {entries.length === 0 ? (
+            <div className="bg-card border border-border rounded-xl p-10 text-center">
+              <div className="text-5xl mb-4 opacity-50">📝</div>
+              <p className="text-muted-foreground">Keine Einträge.<br />Fügen Sie Fotos oder Notizen hinzu.</p>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {[...entries].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()).map((entry, index, arr) => (
+                <div key={entry.id} className="bg-card border border-border rounded-xl p-4">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <span className="text-xl">{entry.typ === 'foto' ? '📷' : '📝'}</span>
@@ -1296,7 +1298,7 @@ export function RestauroMap() {
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className={`text-xs ${darkMode ? 'text-gray-400' : 'text-gray-500'}`}>
+                      <span className="text-xs text-muted-foreground">
                         {new Date(entry.created_at).toLocaleString('de-DE')}
                       </span>
                       {entry.typ === 'notiz' && (
@@ -1305,7 +1307,7 @@ export function RestauroMap() {
                             setEditingEntryId(entry.id);
                             setEditingEntryContent(entry.inhalt);
                           }}
-                          className="p-1.5 text-[#8f1d1d] hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                          className="p-1.5 text-primary hover:bg-muted rounded"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
@@ -1313,12 +1315,12 @@ export function RestauroMap() {
                       {entry.typ === 'foto' && (
                         <button
                           onClick={() => openAnnotator(entry)}
-                          className="p-1.5 text-[#8f1d1d] hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
+                          className="p-1.5 text-primary hover:bg-muted rounded"
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
                       )}
-                      <button onClick={() => deleteEntry(entry.id)} className="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded">
+                      <button onClick={() => deleteEntry(entry.id)} className="p-1.5 text-red-500 hover:bg-red-500/10 rounded">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     </div>
@@ -1329,49 +1331,35 @@ export function RestauroMap() {
                         <textarea
                           value={editingEntryContent}
                           onChange={(e) => setEditingEntryContent(e.target.value)}
-                          className={`w-full p-2 rounded-lg border ${darkMode ? 'bg-[#1c1c1e] border-gray-600' : 'bg-white border-gray-300'}`}
+                          className="w-full p-2 rounded-lg border border-border bg-background"
                           rows={4}
                         />
                         <div className="flex gap-2 mt-2">
-                          <button onClick={() => setEditingEntryId(null)} className={`px-3 py-1.5 text-sm rounded-lg ${darkMode ? 'bg-[#3c3c3e]' : 'bg-gray-200'}`}>
+                          <button onClick={() => setEditingEntryId(null)} className="px-3 py-1.5 text-sm rounded-lg bg-muted">
                             Abbrechen
                           </button>
-                          <button onClick={() => updateEntry(entry.id, editingEntryContent)} className="px-3 py-1.5 text-sm rounded-lg bg-[#8f1d1d] text-white">
+                          <button onClick={() => updateEntry(entry.id, editingEntryContent)} className="px-3 py-1.5 text-sm rounded-lg bg-primary text-primary-foreground">
                             Speichern
                           </button>
                         </div>
                       </div>
                     ) : (
-                      <p className={darkMode ? 'text-gray-300' : 'text-gray-700'}>{entry.inhalt}</p>
+                      <p className="text-muted-foreground">{entry.inhalt}</p>
                     )
                   ) : (
                     <img src={entry.inhalt} alt="Foto" className="max-w-full max-h-48 rounded-lg object-cover" />
                   )}
                 </div>
-              ))
-            )}
-          </div>
-
-          <div className={`fixed bottom-0 left-0 right-0 p-3 border-t flex justify-center gap-3 ${darkMode ? 'bg-[#1c1c1e] border-gray-700' : 'bg-white border-gray-200'}`}>
-            <input type="file" ref={cameraInputRef} className="hidden" accept="image/*" capture="environment" onChange={(e) => e.target.files?.[0] && handleFotoUpload(e.target.files[0], 'camera')} />
-            <input type="file" ref={galleryInputRef} className="hidden" accept="image/*" onChange={(e) => e.target.files?.[0] && handleFotoUpload(e.target.files[0], 'gallery')} />
-            <button onClick={() => cameraInputRef.current?.click()} className="flex-1 max-w-[200px] py-3 bg-[#8f1d1d] text-white rounded-xl flex items-center justify-center gap-2">
-              <Camera className="w-5 h-5" /> Kamera
-            </button>
-            <button onClick={() => galleryInputRef.current?.click()} className={`flex-1 max-w-[200px] py-3 rounded-xl flex items-center justify-center gap-2 ${darkMode ? 'bg-[#2c2c2e]' : 'bg-gray-200'}`}>
-              <ImageIcon className="w-5 h-5" /> Galerie
-            </button>
-            <button onClick={() => setShowNewEntryModal(true)} className={`flex-1 max-w-[200px] py-3 rounded-xl flex items-center justify-center gap-2 ${darkMode ? 'bg-[#2c2c2e]' : 'bg-gray-200'}`}>
-              <FileText className="w-5 h-5" /> Notiz
-            </button>
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 
       {/* New Project Modal */}
       {showNewProjectModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[1000] p-4">
-          <div className={`w-full max-w-md rounded-2xl p-6 ${darkMode ? 'bg-[#2c2c2e]' : 'bg-white'}`}>
+          <div className="w-full max-w-md bg-card border border-border rounded-2xl p-6">
             <h3 className="text-xl font-semibold mb-4">Neues Projekt anlegen</h3>
             <div className="space-y-4">
               <div>
@@ -1380,7 +1368,7 @@ export function RestauroMap() {
                   type="text"
                   value={newProjectName}
                   onChange={(e) => setNewProjectName(e.target.value)}
-                  className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-[#1c1c1e] border-gray-600' : 'bg-white border-gray-300'}`}
+                  className="w-full p-3 rounded-lg border border-border bg-background"
                   placeholder="z.B. Villa Müller"
                 />
               </div>
@@ -1390,7 +1378,7 @@ export function RestauroMap() {
                   type="text"
                   value={newProjectOrt}
                   onChange={(e) => setNewProjectOrt(e.target.value)}
-                  className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-[#1c1c1e] border-gray-600' : 'bg-white border-gray-300'}`}
+                  className="w-full p-3 rounded-lg border border-border bg-background"
                   placeholder="z.B. Wien, Österreich"
                 />
               </div>
@@ -1411,9 +1399,9 @@ export function RestauroMap() {
                 />
                 <button
                   onClick={() => projectImageInputRef.current?.click()}
-                  className={`w-full p-3 rounded-lg border text-left ${darkMode ? 'bg-[#1c1c1e] border-gray-600' : 'bg-white border-gray-300'}`}
+                  className="w-full p-3 rounded-lg border border-border bg-background text-left hover:bg-muted"
                 >
-                  {newProjectImage ? 'Bild ausgewählt ✓' : 'Bild auswählen...'}
+                  {newProjectImage ? 'Bild ausgewählt' : 'Bild auswählen...'}
                 </button>
                 {newProjectImage && (
                   <img src={newProjectImage} alt="Preview" className="mt-2 max-h-32 rounded-lg object-cover" />
@@ -1421,10 +1409,10 @@ export function RestauroMap() {
               </div>
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={() => { setShowNewProjectModal(false); setNewProjectName(''); setNewProjectOrt(''); setNewProjectImage(null); }} className={`flex-1 py-3 rounded-lg ${darkMode ? 'bg-[#3c3c3e]' : 'bg-gray-200'}`}>
+              <button onClick={() => { setShowNewProjectModal(false); setNewProjectName(''); setNewProjectOrt(''); setNewProjectImage(null); }} className="flex-1 py-3 rounded-lg bg-muted">
                 Abbrechen
               </button>
-              <button onClick={createProject} className="flex-1 py-3 bg-[#8f1d1d] text-white rounded-lg">
+              <button onClick={createProject} className="flex-1 py-3 bg-primary text-primary-foreground rounded-lg">
                 Speichern
               </button>
             </div>
@@ -1435,7 +1423,7 @@ export function RestauroMap() {
       {/* New Area Modal */}
       {showNewAreaModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[1000] p-4">
-          <div className={`w-full max-w-md rounded-2xl p-6 ${darkMode ? 'bg-[#2c2c2e]' : 'bg-white'}`}>
+          <div className="w-full max-w-md bg-card border border-border rounded-2xl p-6">
             <h3 className="text-xl font-semibold mb-4">Neuen Bereich benennen</h3>
             <div className="space-y-4">
               <div>
@@ -1444,7 +1432,7 @@ export function RestauroMap() {
                   type="text"
                   value={newAreaName}
                   onChange={(e) => setNewAreaName(e.target.value)}
-                  className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-[#1c1c1e] border-gray-600' : 'bg-white border-gray-300'}`}
+                  className="w-full p-3 rounded-lg border border-border bg-background"
                   placeholder="z.B. Wand Süden"
                 />
               </div>
@@ -1453,19 +1441,19 @@ export function RestauroMap() {
                 <select
                   value={newAreaWichtigkeit}
                   onChange={(e) => setNewAreaWichtigkeit(e.target.value as 'high' | 'medium' | 'low')}
-                  className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-[#1c1c1e] border-gray-600' : 'bg-white border-gray-300'}`}
+                  className="w-full p-3 rounded-lg border border-border bg-background"
                 >
-                  <option value="high">🔴 Hoch</option>
-                  <option value="medium">🟠 Mittel</option>
-                  <option value="low">🟢 Niedrig</option>
+                  <option value="high">Hoch</option>
+                  <option value="medium">Mittel</option>
+                  <option value="low">Niedrig</option>
                 </select>
               </div>
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={() => { setShowNewAreaModal(false); setIsDrawing(false); setDrawingPoints([]); }} className={`flex-1 py-3 rounded-lg ${darkMode ? 'bg-[#3c3c3e]' : 'bg-gray-200'}`}>
+              <button onClick={() => { setShowNewAreaModal(false); setIsDrawing(false); setDrawingPoints([]); }} className="flex-1 py-3 rounded-lg bg-muted">
                 Abbrechen
               </button>
-              <button onClick={createArea} className="flex-1 py-3 bg-[#8f1d1d] text-white rounded-lg">
+              <button onClick={createArea} className="flex-1 py-3 bg-primary text-primary-foreground rounded-lg">
                 Speichern
               </button>
             </div>
@@ -1476,19 +1464,19 @@ export function RestauroMap() {
       {/* New Entry Modal */}
       {showNewEntryModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[1000] p-4">
-          <div className={`w-full max-w-md rounded-2xl p-6 ${darkMode ? 'bg-[#2c2c2e]' : 'bg-white'}`}>
+          <div className="w-full max-w-md bg-card border border-border rounded-2xl p-6">
             <h3 className="text-xl font-semibold mb-4">Neue Notiz</h3>
             <textarea
               value={newEntryContent}
               onChange={(e) => setNewEntryContent(e.target.value)}
-              className={`w-full p-3 rounded-lg border h-32 ${darkMode ? 'bg-[#1c1c1e] border-gray-600' : 'bg-white border-gray-300'}`}
+              className="w-full p-3 rounded-lg border border-border bg-background h-32"
               placeholder="Beschreiben Sie Ihre Beobachtung..."
             />
             <div className="flex gap-3 mt-6">
-              <button onClick={() => { setShowNewEntryModal(false); setNewEntryContent(''); }} className={`flex-1 py-3 rounded-lg ${darkMode ? 'bg-[#3c3c3e]' : 'bg-gray-200'}`}>
+              <button onClick={() => { setShowNewEntryModal(false); setNewEntryContent(''); }} className="flex-1 py-3 rounded-lg bg-muted">
                 Abbrechen
               </button>
-              <button onClick={addNote} className="flex-1 py-3 bg-[#8f1d1d] text-white rounded-lg">
+              <button onClick={addNote} className="flex-1 py-3 bg-primary text-primary-foreground rounded-lg">
                 Speichern
               </button>
             </div>
@@ -1499,7 +1487,7 @@ export function RestauroMap() {
       {/* Company Modal */}
       {showCompanyModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[1000] p-4">
-          <div className={`w-full max-w-md rounded-2xl p-6 ${darkMode ? 'bg-[#2c2c2e]' : 'bg-white'}`}>
+          <div className="w-full max-w-md bg-card border border-border rounded-2xl p-6">
             <h3 className="text-xl font-semibold mb-4">Firmendaten</h3>
             <div className="space-y-4">
               <div>
@@ -1508,7 +1496,7 @@ export function RestauroMap() {
                   type="text"
                   value={company.name || ''}
                   onChange={(e) => setCompany({ ...company, name: e.target.value })}
-                  className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-[#1c1c1e] border-gray-600' : 'bg-white border-gray-300'}`}
+                  className="w-full p-3 rounded-lg border border-border bg-background"
                 />
               </div>
               <div>
@@ -1517,7 +1505,7 @@ export function RestauroMap() {
                   type="email"
                   value={company.email || ''}
                   onChange={(e) => setCompany({ ...company, email: e.target.value })}
-                  className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-[#1c1c1e] border-gray-600' : 'bg-white border-gray-300'}`}
+                  className="w-full p-3 rounded-lg border border-border bg-background"
                 />
               </div>
               <div>
@@ -1526,7 +1514,7 @@ export function RestauroMap() {
                   type="tel"
                   value={company.phone || ''}
                   onChange={(e) => setCompany({ ...company, phone: e.target.value })}
-                  className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-[#1c1c1e] border-gray-600' : 'bg-white border-gray-300'}`}
+                  className="w-full p-3 rounded-lg border border-border bg-background"
                 />
               </div>
               <div>
@@ -1535,7 +1523,7 @@ export function RestauroMap() {
                   type="url"
                   value={company.website || ''}
                   onChange={(e) => setCompany({ ...company, website: e.target.value })}
-                  className={`w-full p-3 rounded-lg border ${darkMode ? 'bg-[#1c1c1e] border-gray-600' : 'bg-white border-gray-300'}`}
+                  className="w-full p-3 rounded-lg border border-border bg-background"
                 />
               </div>
               <div>
@@ -1556,7 +1544,7 @@ export function RestauroMap() {
                 />
                 <button
                   onClick={() => companyLogoInputRef.current?.click()}
-                  className={`w-full p-3 rounded-lg border text-left ${darkMode ? 'bg-[#1c1c1e] border-gray-600' : 'bg-white border-gray-300'}`}
+                  className="w-full p-3 rounded-lg border border-border bg-background text-left hover:bg-muted"
                 >
                   Logo auswählen...
                 </button>
@@ -1566,10 +1554,10 @@ export function RestauroMap() {
               </div>
             </div>
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setShowCompanyModal(false)} className={`flex-1 py-3 rounded-lg ${darkMode ? 'bg-[#3c3c3e]' : 'bg-gray-200'}`}>
+              <button onClick={() => setShowCompanyModal(false)} className="flex-1 py-3 rounded-lg bg-muted">
                 Abbrechen
               </button>
-              <button onClick={saveCompany} className="flex-1 py-3 bg-[#8f1d1d] text-white rounded-lg">
+              <button onClick={saveCompany} className="flex-1 py-3 bg-primary text-primary-foreground rounded-lg">
                 Speichern
               </button>
             </div>
@@ -1580,11 +1568,11 @@ export function RestauroMap() {
       {/* Confirm Modal */}
       {showConfirmModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[1000] p-4">
-          <div className={`w-full max-w-sm rounded-2xl p-6 ${darkMode ? 'bg-[#2c2c2e]' : 'bg-white'}`}>
+          <div className="w-full max-w-sm bg-card border border-border rounded-2xl p-6">
             <h3 className="text-xl font-semibold mb-4">Löschen bestätigen</h3>
-            <p className={darkMode ? 'text-gray-300' : 'text-gray-600'}>{showConfirmModal.message}</p>
+            <p className="text-muted-foreground">{showConfirmModal.message}</p>
             <div className="flex gap-3 mt-6">
-              <button onClick={() => setShowConfirmModal(null)} className={`flex-1 py-3 rounded-lg ${darkMode ? 'bg-[#3c3c3e]' : 'bg-gray-200'}`}>
+              <button onClick={() => setShowConfirmModal(null)} className="flex-1 py-3 rounded-lg bg-muted">
                 Abbrechen
               </button>
               <button onClick={showConfirmModal.onConfirm} className="flex-1 py-3 bg-red-500 text-white rounded-lg">
@@ -1598,24 +1586,24 @@ export function RestauroMap() {
       {/* Area List Modal */}
       {showAreaListModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[1000] p-4">
-          <div className={`w-full max-w-md rounded-2xl p-6 ${darkMode ? 'bg-[#2c2c2e]' : 'bg-white'}`}>
+          <div className="w-full max-w-md bg-card border border-border rounded-2xl p-6">
             <h3 className="text-xl font-semibold mb-4">Bereiche</h3>
             <div className="max-h-[60vh] overflow-y-auto space-y-2">
               {areas.length === 0 ? (
-                <p className="text-gray-500">Keine Bereiche vorhanden.</p>
+                <p className="text-muted-foreground">Keine Bereiche vorhanden.</p>
               ) : (
                 areas.map((area) => (
                   <button
                     key={area.id}
                     onClick={() => { setShowAreaListModal(false); navigateTo('details', area.id); }}
-                    className={`w-full p-3 rounded-lg text-left ${darkMode ? 'bg-[#3c3c3e] hover:bg-[#4c4c4e]' : 'bg-gray-100 hover:bg-gray-200'}`}
+                    className="w-full p-3 rounded-lg text-left bg-muted hover:bg-muted/80"
                   >
-                    {area.name} — <span className="text-gray-500 text-sm">{area.wichtigkeit}</span>
+                    {area.name} — <span className="text-muted-foreground text-sm">{area.wichtigkeit}</span>
                   </button>
                 ))
               )}
             </div>
-            <button onClick={() => setShowAreaListModal(false)} className={`w-full py-3 mt-4 rounded-lg ${darkMode ? 'bg-[#3c3c3e]' : 'bg-gray-200'}`}>
+            <button onClick={() => setShowAreaListModal(false)} className="w-full py-3 mt-4 rounded-lg bg-muted">
               Schließen
             </button>
           </div>
@@ -1625,23 +1613,23 @@ export function RestauroMap() {
       {/* Annotator Modal */}
       {showAnnotatorModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-[1000] p-4">
-          <div className={`w-full max-w-4xl h-[90vh] rounded-2xl p-4 flex flex-col ${darkMode ? 'bg-[#2c2c2e]' : 'bg-white'}`}>
+          <div className="w-full max-w-4xl h-[90vh] bg-card border border-border rounded-2xl p-4 flex flex-col">
             <div className="flex flex-wrap items-center gap-2 mb-3">
-              <div className={`inline-flex rounded-lg overflow-hidden border ${darkMode ? 'border-gray-600' : 'border-gray-300'}`}>
+              <div className="inline-flex rounded-lg overflow-hidden border border-border">
                 {(['line', 'ellipse', 'pen'] as const).map((t) => (
                   <button
                     key={t}
                     onClick={() => { setAnnotatorTool(t); setAnnotatorSelectedIdx(-1); }}
-                    className={`px-3 py-2 text-sm ${annotatorTool === t ? 'bg-[#8f1d1d] text-white' : darkMode ? 'bg-[#3c3c3e]' : 'bg-gray-100'}`}
+                    className={`px-3 py-2 text-sm ${annotatorTool === t ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}
                   >
-                    {t === 'line' ? '— Linie' : t === 'ellipse' ? '○ Ellipse' : '✍️ Freihand'}
+                    {t === 'line' ? '— Linie' : t === 'ellipse' ? '○ Ellipse' : 'Freihand'}
                   </button>
                 ))}
                 <button
                   onClick={() => setAnnotatorTool('select')}
-                  className={`px-3 py-2 text-sm ${annotatorTool === 'select' ? 'bg-[#8f1d1d] text-white' : darkMode ? 'bg-[#3c3c3e]' : 'bg-gray-100'}`}
+                  className={`px-3 py-2 text-sm ${annotatorTool === 'select' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}
                 >
-                  🎯 Auswählen
+                  Auswählen
                 </button>
               </div>
               <input type="color" value={annotatorColor} onChange={(e) => setAnnotatorColor(e.target.value)} className="w-8 h-8 rounded cursor-pointer" />
@@ -1650,7 +1638,7 @@ export function RestauroMap() {
                   <button
                     key={c}
                     onClick={() => setAnnotatorColor(c)}
-                    className={`w-7 h-7 rounded-full ${annotatorColor === c ? 'ring-2 ring-[#8f1d1d]' : ''}`}
+                    className={`w-7 h-7 rounded-full ${annotatorColor === c ? 'ring-2 ring-primary' : ''}`}
                     style={{ backgroundColor: c, border: c === '#ffffff' ? '1px solid #ccc' : 'none' }}
                   />
                 ))}
@@ -1658,30 +1646,30 @@ export function RestauroMap() {
               <select
                 value={annotatorWidth}
                 onChange={(e) => setAnnotatorWidth(parseInt(e.target.value))}
-                className={`p-2 rounded-lg border ${darkMode ? 'bg-[#3c3c3e] border-gray-600' : 'bg-gray-100 border-gray-300'}`}
+                className="p-2 rounded-lg border border-border bg-background"
               >
                 {[8, 12, 16, 24, 32, 40, 48].map((w) => (
                   <option key={w} value={w}>{w}</option>
                 ))}
               </select>
               <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={annotatorOverwrite} onChange={(e) => setAnnotatorOverwrite(e.target.checked)} />
+                <input type="checkbox" checked={annotatorOverwrite} onChange={(e) => setAnnotatorOverwrite(e.target.checked)} className="w-4 h-4" />
                 Original überschreiben
               </label>
               <button
                 onClick={() => { if (annotatorSelectedIdx > -1) { setAnnotatorShapes(annotatorShapes.filter((_, i) => i !== annotatorSelectedIdx)); setAnnotatorSelectedIdx(-1); } }}
-                className={`px-3 py-2 text-sm rounded-lg ${darkMode ? 'bg-[#3c3c3e]' : 'bg-gray-100'}`}
+                className="px-3 py-2 text-sm rounded-lg bg-muted hover:bg-muted/80"
               >
-                🗑️ Löschen
+                Löschen
               </button>
               <button
                 onClick={() => { if (annotatorShapes.length > 0) { setAnnotatorShapes(annotatorShapes.slice(0, -1)); if (annotatorSelectedIdx >= annotatorShapes.length - 1) setAnnotatorSelectedIdx(-1); } }}
-                className={`px-3 py-2 text-sm rounded-lg ${darkMode ? 'bg-[#3c3c3e]' : 'bg-gray-100'}`}
+                className="px-3 py-2 text-sm rounded-lg bg-muted hover:bg-muted/80"
               >
-                ↶ Rückgängig
+                Rückgängig
               </button>
             </div>
-            <div className={`flex-1 border rounded-lg overflow-hidden flex items-center justify-center ${darkMode ? 'bg-[#1c1c1e] border-gray-600' : 'bg-gray-100 border-gray-300'}`}>
+            <div className="flex-1 border border-border rounded-lg overflow-hidden flex items-center justify-center bg-muted/30">
               <canvas
                 ref={annotatorCanvasRef}
                 className="max-w-full max-h-full"
@@ -1692,21 +1680,16 @@ export function RestauroMap() {
               />
             </div>
             <div className="flex justify-end gap-3 mt-3">
-              <button onClick={() => setShowAnnotatorModal(false)} className={`px-4 py-2 rounded-lg ${darkMode ? 'bg-[#3c3c3e]' : 'bg-gray-200'}`}>
+              <button onClick={() => setShowAnnotatorModal(false)} className="px-4 py-2 rounded-lg bg-muted">
                 Abbrechen
               </button>
-              <button onClick={saveAnnotation} className="px-4 py-2 bg-[#8f1d1d] text-white rounded-lg">
+              <button onClick={saveAnnotation} className="px-4 py-2 bg-primary text-primary-foreground rounded-lg">
                 Speichern
               </button>
             </div>
           </div>
         </div>
       )}
-
-      {/* Footer */}
-      <div className="text-center text-xs text-gray-500 py-2">
-        © Kofler e.U. • RestauroMap
-      </div>
     </div>
   );
 }

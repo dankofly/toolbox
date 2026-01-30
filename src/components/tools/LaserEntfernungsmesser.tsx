@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Plus, FileSpreadsheet, ChevronDown, ChevronUp, Trash2, Edit2, Save, Moon, Sun } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Plus, FileSpreadsheet, ChevronDown, ChevronUp, Trash2, Edit2, Save } from 'lucide-react';
 
 // Types
 interface Measurement {
@@ -63,7 +63,6 @@ export function LaserEntfernungsmesser() {
   const [measurements, setMeasurements] = useState<Measurement[]>([]);
   const [unit, setUnit] = useState<Unit>('m');
   const [projectName, setProjectName] = useState('');
-  const [darkMode, setDarkMode] = useState(false);
   const [toast, setToast] = useState<{ message: string; type: 'success' | 'error' } | null>(null);
   const canvasRefs = useRef<Map<string, HTMLCanvasElement>>(new Map());
 
@@ -133,7 +132,6 @@ export function LaserEntfernungsmesser() {
       const saved = localStorage.getItem(LS_KEY);
       if (saved) {
         const data = JSON.parse(saved);
-        if (data.theme === 'dark') setDarkMode(true);
         if (data.projectName) setProjectName(data.projectName);
         if (data.unit && unitConversion[data.unit as Unit]) setUnit(data.unit as Unit);
         if (data.measurements?.length > 0) {
@@ -154,7 +152,6 @@ export function LaserEntfernungsmesser() {
   useEffect(() => {
     try {
       const data = {
-        theme: darkMode ? 'dark' : 'light',
         projectName,
         unit,
         measurements: measurements.map(({ id, l, b, h, form, name }) => ({ id, l, b, h, form, name })),
@@ -163,7 +160,7 @@ export function LaserEntfernungsmesser() {
     } catch {
       // Ignore
     }
-  }, [measurements, projectName, unit, darkMode]);
+  }, [measurements, projectName, unit]);
 
   // Draw visualizations
   useEffect(() => {
@@ -173,7 +170,7 @@ export function LaserEntfernungsmesser() {
         drawVisualization(canvas, m.form, parseFloat(m.l) || 0, parseFloat(m.b) || 0, parseFloat(m.h) || 0);
       }
     });
-  }, [measurements, darkMode]);
+  }, [measurements]);
 
   const drawVisualization = useCallback((canvas: HTMLCanvasElement, form: string, l: number, b: number, h: number) => {
     const ctx = canvas.getContext('2d');
@@ -191,13 +188,16 @@ export function LaserEntfernungsmesser() {
 
     if (!form || (!l && !h && !b)) return;
 
+    // Check theme for canvas colors
+    const isDark = document.documentElement.classList.contains('dark');
+
     const c = {
-      base: darkMode ? '#5a5a5e' : '#c2c2c7',
-      light: darkMode ? '#7a7a7e' : '#e5e5ea',
-      dark: darkMode ? '#3a3a3c' : '#a2a2a7',
-      stroke: darkMode ? '#d1d1d6' : '#636366',
-      highlight: darkMode ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.7)',
-      fill2d: darkMode ? 'rgba(158,158,163,0.5)' : 'rgba(142,142,147,0.5)',
+      base: isDark ? '#5a5a5e' : '#c2c2c7',
+      light: isDark ? '#7a7a7e' : '#e5e5ea',
+      dark: isDark ? '#3a3a3c' : '#a2a2a7',
+      stroke: isDark ? '#d1d1d6' : '#636366',
+      highlight: isDark ? 'rgba(255,255,255,0.4)' : 'rgba(255,255,255,0.7)',
+      fill2d: isDark ? 'rgba(158,158,163,0.5)' : 'rgba(142,142,147,0.5)',
     };
 
     ctx.lineJoin = 'round';
@@ -396,7 +396,7 @@ export function LaserEntfernungsmesser() {
         break;
       }
     }
-  }, [darkMode]);
+  }, []);
 
   // Handlers
   const addMeasurement = () => {
@@ -515,332 +515,292 @@ export function LaserEntfernungsmesser() {
   );
 
   return (
-    <div className={`min-h-[600px] p-4 md:p-6 ${darkMode ? 'bg-black text-gray-100' : 'bg-gray-100 text-gray-900'}`}>
+    <div className="space-y-6">
       {/* Toast */}
       {toast && (
-        <div className={`fixed bottom-5 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl text-white font-medium z-50 transition-all ${
-          toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'
-        }`}>
-          {toast.message}
+        <div className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50">
+          <div className={`px-6 py-3 rounded-xl text-white font-medium shadow-lg ${
+            toast.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+          }`}>
+            {toast.message}
+          </div>
         </div>
       )}
 
-      <div className="max-w-6xl mx-auto">
-        <h1 className="text-2xl md:text-3xl font-semibold text-center mb-6">Laser Entfernungsmesser</h1>
-
-        {/* Controls */}
-        <div className={`p-4 md:p-5 rounded-xl mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3 ${
-          darkMode ? 'bg-[#1c1c1e] border border-gray-700' : 'bg-white shadow-md'
-        }`}>
-          <div>
-            <label className="block text-sm text-gray-500 mb-1">Maßeinheit</label>
-            <select
-              value={unit}
-              onChange={(e) => changeUnit(e.target.value as Unit)}
-              className={`w-full p-3 rounded-lg border ${
-                darkMode ? 'bg-[#2c2c2e] border-gray-600' : 'bg-white border-gray-200'
-              }`}
-            >
-              <option value="m">Meter (m)</option>
-              <option value="cm">Zentimeter (cm)</option>
-              <option value="mm">Millimeter (mm)</option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm text-gray-500 mb-1">Projektname</label>
-            <input
-              type="text"
-              value={projectName}
-              onChange={(e) => setProjectName(e.target.value)}
-              placeholder="z.B. Wohnzimmer"
-              className={`w-full p-3 rounded-lg border ${
-                darkMode ? 'bg-[#2c2c2e] border-gray-600' : 'bg-white border-gray-200'
-              }`}
-            />
-          </div>
-          <button
-            onClick={addMeasurement}
-            className="flex items-center justify-center gap-2 p-3 bg-[#8f1d1d] text-white rounded-lg hover:bg-[#7a1919] transition-all"
+      {/* Controls */}
+      <div className="bg-card border border-border rounded-2xl p-4 md:p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-3">
+        <div>
+          <label className="block text-sm text-muted-foreground mb-1">Maßeinheit</label>
+          <select
+            value={unit}
+            onChange={(e) => changeUnit(e.target.value as Unit)}
+            className="w-full h-10 px-3 rounded-lg border border-border bg-background text-foreground"
           >
-            <Plus className="w-5 h-5" /> Neue Messung
+            <option value="m">Meter (m)</option>
+            <option value="cm">Zentimeter (cm)</option>
+            <option value="mm">Millimeter (mm)</option>
+          </select>
+        </div>
+        <div>
+          <label className="block text-sm text-muted-foreground mb-1">Projektname</label>
+          <input
+            type="text"
+            value={projectName}
+            onChange={(e) => setProjectName(e.target.value)}
+            placeholder="z.B. Wohnzimmer"
+            className="w-full h-10 px-3 rounded-lg border border-border bg-background text-foreground"
+          />
+        </div>
+        <button
+          onClick={addMeasurement}
+          className="flex items-center justify-center gap-2 h-10 mt-auto bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
+        >
+          <Plus className="w-4 h-4" /> Neue Messung
+        </button>
+        <button
+          onClick={exportToCSV}
+          className="flex items-center justify-center gap-2 h-10 mt-auto bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors"
+        >
+          <FileSpreadsheet className="w-4 h-4" /> CSV Export
+        </button>
+        <div className="flex gap-2 mt-auto">
+          <button
+            onClick={collapseAll}
+            className="flex-1 h-10 rounded-lg border border-border hover:bg-muted transition-colors"
+            title="Alle einklappen"
+          >
+            <ChevronDown className="w-4 h-4 mx-auto" />
           </button>
           <button
-            onClick={exportToCSV}
-            className="flex items-center justify-center gap-2 p-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-all"
+            onClick={expandAll}
+            className="flex-1 h-10 rounded-lg border border-border hover:bg-muted transition-colors"
+            title="Alle ausklappen"
           >
-            <FileSpreadsheet className="w-5 h-5" /> Excel Export
-          </button>
-          <div className="flex gap-2">
-            <button
-              onClick={collapseAll}
-              className={`flex-1 p-3 rounded-lg transition-all ${
-                darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'
-              }`}
-            >
-              <ChevronDown className="w-5 h-5 mx-auto" />
-            </button>
-            <button
-              onClick={expandAll}
-              className={`flex-1 p-3 rounded-lg transition-all ${
-                darkMode ? 'bg-gray-700 hover:bg-gray-600' : 'bg-gray-200 hover:bg-gray-300'
-              }`}
-            >
-              <ChevronUp className="w-5 h-5 mx-auto" />
-            </button>
-          </div>
-          <button
-            onClick={clearAll}
-            className="flex items-center justify-center gap-2 p-3 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-all"
-          >
-            <Trash2 className="w-5 h-5" /> Löschen
+            <ChevronUp className="w-4 h-4 mx-auto" />
           </button>
         </div>
+        <button
+          onClick={clearAll}
+          className="flex items-center justify-center gap-2 h-10 mt-auto bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
+        >
+          <Trash2 className="w-4 h-4" /> Löschen
+        </button>
+      </div>
 
-        {/* Measurements */}
-        <div className="space-y-4">
-          {measurements.length === 0 ? (
-            <div className={`text-center py-12 rounded-xl ${darkMode ? 'bg-[#1c1c1e]' : 'bg-white'}`}>
-              <p className="text-gray-500">Keine Messungen vorhanden. Klicken Sie auf &quot;Neue Messung&quot; um zu beginnen.</p>
-            </div>
-          ) : (
-            measurements.map((m) => {
-              const config = getFieldConfig(m.form);
-              const labels = getLabels(m.form);
-              const l = parseFloat(m.l) || 0;
-              const b = parseFloat(m.b) || 0;
-              const h = parseFloat(m.h) || 0;
-              const result = calculateGeometry(m.form, l, b, h);
-              const hasAllValues = (!config.needsL || l) && (!config.needsB || b) && (!config.needsH || h);
+      {/* Measurements */}
+      <div className="space-y-4">
+        {measurements.length === 0 ? (
+          <div className="text-center py-12 bg-card border border-border rounded-2xl">
+            <p className="text-muted-foreground">Keine Messungen vorhanden. Klicken Sie auf &quot;Neue Messung&quot; um zu beginnen.</p>
+          </div>
+        ) : (
+          measurements.map((m) => {
+            const config = getFieldConfig(m.form);
+            const labels = getLabels(m.form);
+            const l = parseFloat(m.l) || 0;
+            const b = parseFloat(m.b) || 0;
+            const h = parseFloat(m.h) || 0;
+            const result = calculateGeometry(m.form, l, b, h);
+            const hasAllValues = (!config.needsL || l) && (!config.needsB || b) && (!config.needsH || h);
 
-              return (
-                <div
-                  key={m.id}
-                  className={`rounded-xl overflow-hidden transition-all ${
-                    darkMode ? 'bg-[#1c1c1e] border border-gray-700' : 'bg-white shadow-md'
-                  } ${m.editing ? 'ring-2 ring-[#8f1d1d]' : ''}`}
-                >
-                  {m.collapsed ? (
-                    <div className="p-4 flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <span className="font-medium text-lg">{m.name || 'Unbenannt'}</span>
-                        {m.form && result > 0 && hasAllValues && (
-                          <span className="text-[#8f1d1d] font-semibold">
-                            {result.toFixed(2)} {getUnitSuffix(m.form)}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => toggleEdit(m.id)}
-                          className={`p-2 rounded-lg border ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}
-                        >
-                          {m.editing ? <Save className="w-5 h-5" /> : <Edit2 className="w-5 h-5" />}
-                        </button>
-                        <button
-                          onClick={() => toggleCollapse(m.id)}
-                          className={`p-2 rounded-lg border ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}
-                        >
-                          <ChevronUp className="w-5 h-5" />
-                        </button>
-                        <button
-                          onClick={() => deleteMeasurement(m.id)}
-                          className={`p-2 rounded-lg border text-red-500 ${darkMode ? 'border-gray-600' : 'border-gray-200'}`}
-                        >
-                          <Trash2 className="w-5 h-5" />
-                        </button>
-                      </div>
+            return (
+              <div
+                key={m.id}
+                className={`bg-card border border-border rounded-2xl overflow-hidden transition-all ${
+                  m.editing ? 'ring-2 ring-primary' : ''
+                }`}
+              >
+                {m.collapsed ? (
+                  <div className="p-4 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <span className="font-medium text-lg">{m.name || 'Unbenannt'}</span>
+                      {m.form && result > 0 && hasAllValues && (
+                        <span className="text-primary font-semibold">
+                          {result.toFixed(2)} {getUnitSuffix(m.form)}
+                        </span>
+                      )}
                     </div>
-                  ) : (
-                    <div className="p-4">
-                      <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
-                        {/* Form Select */}
-                        <div>
-                          <label className="block text-sm text-gray-500 mb-1">Form</label>
-                          <select
-                            value={m.form}
-                            onChange={(e) => updateMeasurement(m.id, 'form', e.target.value)}
-                            disabled={!m.editing}
-                            className={`w-full p-3 rounded-lg border ${
-                              darkMode ? 'bg-[#2c2c2e] border-gray-600' : 'bg-white border-gray-200'
-                            } ${!m.editing ? 'opacity-60 cursor-not-allowed' : ''}`}
-                          >
-                            <option value="">Form wählen...</option>
-                            {Object.keys(formConfig).filter(f => f).map((f) => (
-                              <option key={f} value={f}>{f}</option>
-                            ))}
-                          </select>
-                        </div>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => toggleEdit(m.id)}
+                        className="p-2 rounded-lg border border-border hover:bg-muted transition-colors"
+                      >
+                        {m.editing ? <Save className="w-4 h-4" /> : <Edit2 className="w-4 h-4" />}
+                      </button>
+                      <button
+                        onClick={() => toggleCollapse(m.id)}
+                        className="p-2 rounded-lg border border-border hover:bg-muted transition-colors"
+                      >
+                        <ChevronUp className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => deleteMeasurement(m.id)}
+                        className="p-2 rounded-lg border border-border text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="p-4">
+                    <div className="grid grid-cols-1 md:grid-cols-6 gap-4">
+                      {/* Form Select */}
+                      <div>
+                        <label className="block text-sm text-muted-foreground mb-1">Form</label>
+                        <select
+                          value={m.form}
+                          onChange={(e) => updateMeasurement(m.id, 'form', e.target.value)}
+                          disabled={!m.editing}
+                          className="w-full h-10 px-3 rounded-lg border border-border bg-background text-foreground disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                          <option value="">Form wählen...</option>
+                          {Object.keys(formConfig).filter(f => f).map((f) => (
+                            <option key={f} value={f}>{f}</option>
+                          ))}
+                        </select>
+                      </div>
 
-                        {/* Length/Radius */}
+                      {/* Length/Radius */}
+                      <div>
+                        <label className="block text-sm text-muted-foreground mb-1">{labels.l}</label>
+                        <input
+                          type="number"
+                          value={m.l}
+                          onChange={(e) => updateMeasurement(m.id, 'l', e.target.value)}
+                          placeholder="0.00"
+                          step="0.01"
+                          min="0"
+                          readOnly={!m.editing}
+                          className={`w-full h-10 px-3 rounded-lg border bg-background text-foreground read-only:opacity-60 read-only:cursor-not-allowed ${
+                            config.needsL && !l && m.form ? 'border-red-500' : 'border-border'
+                          }`}
+                        />
+                      </div>
+
+                      {/* Width */}
+                      {config.showB && (
                         <div>
-                          <label className="block text-sm text-gray-500 mb-1">{labels.l}</label>
+                          <label className="block text-sm text-muted-foreground mb-1">{labels.b}</label>
                           <input
                             type="number"
-                            value={m.l}
-                            onChange={(e) => updateMeasurement(m.id, 'l', e.target.value)}
+                            value={m.b}
+                            onChange={(e) => updateMeasurement(m.id, 'b', e.target.value)}
                             placeholder="0.00"
                             step="0.01"
                             min="0"
                             readOnly={!m.editing}
-                            className={`w-full p-3 rounded-lg border ${
-                              darkMode ? 'bg-[#2c2c2e] border-gray-600' : 'bg-white border-gray-200'
-                            } ${!m.editing ? 'opacity-60 cursor-not-allowed' : ''} ${
-                              config.needsL && !l && m.form ? 'border-red-500' : ''
+                            className={`w-full h-10 px-3 rounded-lg border bg-background text-foreground read-only:opacity-60 read-only:cursor-not-allowed ${
+                              config.needsB && !b && m.form ? 'border-red-500' : 'border-border'
                             }`}
                           />
                         </div>
+                      )}
 
-                        {/* Width */}
-                        {config.showB && (
-                          <div>
-                            <label className="block text-sm text-gray-500 mb-1">{labels.b}</label>
-                            <input
-                              type="number"
-                              value={m.b}
-                              onChange={(e) => updateMeasurement(m.id, 'b', e.target.value)}
-                              placeholder="0.00"
-                              step="0.01"
-                              min="0"
-                              readOnly={!m.editing}
-                              className={`w-full p-3 rounded-lg border ${
-                                darkMode ? 'bg-[#2c2c2e] border-gray-600' : 'bg-white border-gray-200'
-                              } ${!m.editing ? 'opacity-60 cursor-not-allowed' : ''} ${
-                                config.needsB && !b && m.form ? 'border-red-500' : ''
-                              }`}
-                            />
-                          </div>
-                        )}
-
-                        {/* Height */}
-                        {config.showH && (
-                          <div>
-                            <label className="block text-sm text-gray-500 mb-1">{labels.h}</label>
-                            <input
-                              type="number"
-                              value={m.h}
-                              onChange={(e) => updateMeasurement(m.id, 'h', e.target.value)}
-                              placeholder="0.00"
-                              step="0.01"
-                              min="0"
-                              readOnly={!m.editing}
-                              className={`w-full p-3 rounded-lg border ${
-                                darkMode ? 'bg-[#2c2c2e] border-gray-600' : 'bg-white border-gray-200'
-                              } ${!m.editing ? 'opacity-60 cursor-not-allowed' : ''} ${
-                                config.needsH && !h && m.form ? 'border-red-500' : ''
-                              }`}
-                            />
-                          </div>
-                        )}
-
-                        {/* Name */}
-                        <div className={config.showB && config.showH ? '' : 'md:col-span-2'}>
-                          <label className="block text-sm text-gray-500 mb-1">Bezeichnung</label>
+                      {/* Height */}
+                      {config.showH && (
+                        <div>
+                          <label className="block text-sm text-muted-foreground mb-1">{labels.h}</label>
                           <input
-                            type="text"
-                            value={m.name}
-                            onChange={(e) => updateMeasurement(m.id, 'name', e.target.value)}
-                            placeholder="Beschreibung..."
+                            type="number"
+                            value={m.h}
+                            onChange={(e) => updateMeasurement(m.id, 'h', e.target.value)}
+                            placeholder="0.00"
+                            step="0.01"
+                            min="0"
                             readOnly={!m.editing}
-                            className={`w-full p-3 rounded-lg border ${
-                              darkMode ? 'bg-[#2c2c2e] border-gray-600' : 'bg-white border-gray-200'
-                            } ${!m.editing ? 'opacity-60 cursor-not-allowed' : ''}`}
+                            className={`w-full h-10 px-3 rounded-lg border bg-background text-foreground read-only:opacity-60 read-only:cursor-not-allowed ${
+                              config.needsH && !h && m.form ? 'border-red-500' : 'border-border'
+                            }`}
                           />
                         </div>
-                      </div>
+                      )}
 
-                      {/* Result & Visualization */}
-                      <div className="mt-4 flex flex-col md:flex-row items-center justify-between gap-4">
-                        <div className="flex items-center gap-4">
-                          <canvas
-                            ref={(el) => {
-                              if (el) canvasRefs.current.set(m.id, el);
-                            }}
-                            className="rounded-lg"
-                            style={{ width: 120, height: 90 }}
-                          />
-                          <div className="text-center md:text-left">
-                            <div className="text-sm text-gray-500">Ergebnis</div>
-                            <div className="text-2xl font-bold text-[#8f1d1d]">
-                              {!m.form
-                                ? 'Form wählen...'
-                                : result > 0 && hasAllValues
-                                ? `${result.toFixed(2)} ${getUnitSuffix(m.form)}`
-                                : 'Werte eingeben...'}
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex gap-2">
-                          <button
-                            onClick={() => toggleEdit(m.id)}
-                            className={`p-2 rounded-lg border transition-all hover:border-[#8f1d1d] hover:text-[#8f1d1d] ${
-                              darkMode ? 'border-gray-600' : 'border-gray-200'
-                            }`}
-                            title={m.editing ? 'Speichern' : 'Bearbeiten'}
-                          >
-                            {m.editing ? <Save className="w-5 h-5" /> : <Edit2 className="w-5 h-5" />}
-                          </button>
-                          <button
-                            onClick={() => toggleCollapse(m.id)}
-                            className={`p-2 rounded-lg border transition-all hover:border-[#8f1d1d] hover:text-[#8f1d1d] ${
-                              darkMode ? 'border-gray-600' : 'border-gray-200'
-                            }`}
-                            title="Einklappen"
-                          >
-                            <ChevronDown className="w-5 h-5" />
-                          </button>
-                          <button
-                            onClick={() => deleteMeasurement(m.id)}
-                            className={`p-2 rounded-lg border text-red-500 transition-all hover:bg-red-50 ${
-                              darkMode ? 'border-gray-600 hover:bg-red-900/20' : 'border-gray-200'
-                            }`}
-                            title="Löschen"
-                          >
-                            <Trash2 className="w-5 h-5" />
-                          </button>
-                        </div>
+                      {/* Name */}
+                      <div className={config.showB && config.showH ? '' : 'md:col-span-2'}>
+                        <label className="block text-sm text-muted-foreground mb-1">Bezeichnung</label>
+                        <input
+                          type="text"
+                          value={m.name}
+                          onChange={(e) => updateMeasurement(m.id, 'name', e.target.value)}
+                          placeholder="Beschreibung..."
+                          readOnly={!m.editing}
+                          className="w-full h-10 px-3 rounded-lg border border-border bg-background text-foreground read-only:opacity-60 read-only:cursor-not-allowed"
+                        />
                       </div>
                     </div>
-                  )}
-                </div>
-              );
-            })
-          )}
-        </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-6">
-          <div className={`p-4 rounded-xl text-center ${darkMode ? 'bg-[#1c1c1e] border border-gray-700' : 'bg-white shadow-md'}`}>
-            <div className="text-2xl font-bold text-[#8f1d1d]">{totals.area.toFixed(2)} {unit}²</div>
-            <div className="text-sm text-gray-500">Gesamtfläche</div>
-          </div>
-          <div className={`p-4 rounded-xl text-center ${darkMode ? 'bg-[#1c1c1e] border border-gray-700' : 'bg-white shadow-md'}`}>
-            <div className="text-2xl font-bold text-[#8f1d1d]">{totals.length.toFixed(2)} {unit}</div>
-            <div className="text-sm text-gray-500">Gesamtlänge</div>
-          </div>
-          <div className={`p-4 rounded-xl text-center ${darkMode ? 'bg-[#1c1c1e] border border-gray-700' : 'bg-white shadow-md'}`}>
-            <div className="text-2xl font-bold text-[#8f1d1d]">{totals.volume.toFixed(2)} {unit}³</div>
-            <div className="text-sm text-gray-500">Gesamtvolumen</div>
-          </div>
-          <div className={`p-4 rounded-xl text-center ${darkMode ? 'bg-[#1c1c1e] border border-gray-700' : 'bg-white shadow-md'}`}>
-            <div className="text-2xl font-bold text-[#8f1d1d]">{measurements.length}</div>
-            <div className="text-sm text-gray-500">Messungen</div>
-          </div>
-        </div>
+                    {/* Result & Visualization */}
+                    <div className="mt-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                      <div className="flex items-center gap-4">
+                        <canvas
+                          ref={(el) => {
+                            if (el) canvasRefs.current.set(m.id, el);
+                          }}
+                          className="rounded-lg bg-muted/30"
+                          style={{ width: 120, height: 90 }}
+                        />
+                        <div className="text-center md:text-left">
+                          <div className="text-sm text-muted-foreground">Ergebnis</div>
+                          <div className="text-2xl font-bold text-primary">
+                            {!m.form
+                              ? 'Form wählen...'
+                              : result > 0 && hasAllValues
+                              ? `${result.toFixed(2)} ${getUnitSuffix(m.form)}`
+                              : 'Werte eingeben...'}
+                          </div>
+                        </div>
+                      </div>
 
-        {/* Footer */}
-        <footer className="mt-8 text-center text-sm text-gray-500 flex items-center justify-center gap-4">
-          <span>© Kofler e.U. | Laser Entfernungsmesser Tool</span>
-          <button
-            onClick={() => {
-              setDarkMode(!darkMode);
-            }}
-            className={`p-2 rounded-full ${darkMode ? 'bg-[#2c2c2e]' : 'bg-white shadow'}`}
-            title="Design wechseln"
-          >
-            {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-          </button>
-        </footer>
+                      <div className="flex gap-2">
+                        <button
+                          onClick={() => toggleEdit(m.id)}
+                          className="p-2 rounded-lg border border-border hover:border-primary hover:text-primary transition-colors"
+                          title={m.editing ? 'Speichern' : 'Bearbeiten'}
+                        >
+                          {m.editing ? <Save className="w-4 h-4" /> : <Edit2 className="w-4 h-4" />}
+                        </button>
+                        <button
+                          onClick={() => toggleCollapse(m.id)}
+                          className="p-2 rounded-lg border border-border hover:border-primary hover:text-primary transition-colors"
+                          title="Einklappen"
+                        >
+                          <ChevronDown className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => deleteMeasurement(m.id)}
+                          className="p-2 rounded-lg border border-border text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                          title="Löschen"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Stats */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-card border border-border rounded-2xl p-4 text-center">
+          <div className="text-2xl font-bold text-primary">{totals.area.toFixed(2)} {unit}²</div>
+          <div className="text-sm text-muted-foreground">Gesamtfläche</div>
+        </div>
+        <div className="bg-card border border-border rounded-2xl p-4 text-center">
+          <div className="text-2xl font-bold text-primary">{totals.length.toFixed(2)} {unit}</div>
+          <div className="text-sm text-muted-foreground">Gesamtlänge</div>
+        </div>
+        <div className="bg-card border border-border rounded-2xl p-4 text-center">
+          <div className="text-2xl font-bold text-primary">{totals.volume.toFixed(2)} {unit}³</div>
+          <div className="text-sm text-muted-foreground">Gesamtvolumen</div>
+        </div>
+        <div className="bg-card border border-border rounded-2xl p-4 text-center">
+          <div className="text-2xl font-bold text-primary">{measurements.length}</div>
+          <div className="text-sm text-muted-foreground">Messungen</div>
+        </div>
       </div>
     </div>
   );
