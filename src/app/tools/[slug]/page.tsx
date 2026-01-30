@@ -50,7 +50,9 @@ export default async function ToolPage({ params }: ToolPageProps) {
   }[tool.accessLevel];
 
   const AccessIcon = accessInfo.icon;
-  const requiresAuth = tool.accessLevel !== 'free';
+  // TODO: Re-enable auth check when authentication is implemented
+  // const requiresAuth = tool.accessLevel !== 'free';
+  const requiresAuth = false; // Temporarily disabled for testing
 
   return (
     <div className="flex flex-col pt-20">
